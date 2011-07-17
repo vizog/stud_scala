@@ -4,20 +4,22 @@ import scala.actors.Actor;
 
 //messages:
 
-case object SayFirstName
-case object SayLastName
+case object SayName
+case object SayId
 
-class Student extends Actor {
-  var fName = "ali"
-  var lName = "gholi"
+class Student(
+  var id: String,
+  var name: String,
+  var studyRecords: List[StudyRecord]) extends Actor {
+  def this() = this(null, null, Nil)
 
-  def act() {
+  override def act() {
     loop {
       react {
-        case SayFirstName =>
-          println(fName)
-        case SayLastName =>
-          println(lName)
+        case SayName =>
+          println(name)
+        case SayId =>
+          println(id)
         case exit =>
           exit
       }
