@@ -5,10 +5,7 @@ import java.sql.Date
 
 object testDomain {
   def main(args: Array[String]): Unit = {
-    println("hello I am Testing");
-//    testStudent
-//    testTerm
-//    
+    testStudent
   }
 
   def testStudent() {
@@ -18,8 +15,8 @@ object testDomain {
     st ! SayId
     st ! SayName
     st ! "boomBang"
-    st ! exit
-    st ! "gholaam"
+//    st ! exit
+//    st ! "gholaam"
   }
 
   def testTerm() {

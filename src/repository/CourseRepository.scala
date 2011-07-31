@@ -21,4 +21,32 @@ object CourseRepository {
     crs.start
     return crs
   }
+  
+  	def save(course: Course) {
+			var con: Connection = JDBCUtil.getConnection();
+			var st: Statement = con.createStatement();
+			
+			if ((st.executeQuery("select * from course where id = '" + course.id + "'")).next())
+				st.executeUpdate("update course set name = '" + course.name + "', units = 3 " + 
+						"where id = '" + course.id + "'");
+			else
+				st.executeUpdate("insert into course values('" + course.id + "', '" + course.name + "', 3)");
+			JDBCUtil.closeConnection(con);
+					
+	}
+	
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 }
