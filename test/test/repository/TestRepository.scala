@@ -1,12 +1,15 @@
 package test.repository
-import repository.CourseRepository
-import domain.SayName
-import domain.ChangeName
-import scala.actors.Actor
-import scala.actors.Actor._
-import domain.Save
-import java.util.Date
-import domain.Course
+import repository.CourseRepository;
+import repository.StudentRepository;
+import scala.actors.Actor;
+import scala.actors.Actor._;
+import java.util.Date;
+import domain.Course;
+import domain.SayName;
+import domain.ChangeName;
+import domain.Save;
+import domain.Student;
+import domain.HasPassed;
 
 case class TestCase(testFunc: () => Unit)
 
@@ -31,7 +34,7 @@ object TestRepository extends {
 
     var testerActor = new TesterActor
     testerActor.start
-    testerActor ! testSync
+    testerActor ! testStudent
     //    testerActor ! exit
   }
 
@@ -65,6 +68,21 @@ object TestRepository extends {
     val response = course !? SayName;
     println(new Date() + " received response: " + response)
 
+  }
+
+  private def testStudent() {
+    var course: Course = CourseRepository.findById("ds");
+    val pres:List[Course] = CourseRepository.findPreRequisitesForCourse(course)
+    course.preRequisites = pres
+    course.start
+    var st = StudentRepository.findById("bebe")
+    st.studyRecords = StudentRepository.findStudyRecords(st)
+    st.start
+    st ! HasPassed(course, self)
+    receive {
+      case "hello" =>
+        println("dsf")
+    }
   }
 
 }

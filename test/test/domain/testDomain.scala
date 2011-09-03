@@ -9,12 +9,13 @@ object testDomain {
   }
 
   def testStudent() {
+	var course = new Course
     var st = new Student
     st.name = "ali gholi"
     st.start
     st ! SayId
     st ! SayName
-    st ! "boomBang"
+    
 //    st ! exit
 //    st ! "gholaam"
   }

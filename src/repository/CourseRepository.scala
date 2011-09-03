@@ -4,6 +4,7 @@ import util.JDBCUtil
 import java.sql.Connection
 import java.sql.Statement
 import java.sql.ResultSet
+import java.sql.SQLException
 
 object CourseRepository {
 
@@ -16,7 +17,15 @@ object CourseRepository {
     var crs: Course = null;
     if (rs.next())
       crs = new Course(rs.getString("id"), rs.getString("name"), rs.getInt("units"), Nil);
-
+    
+    //add prerequisites
+//    rs = st.executeQuery("select * from course where pre_of='" + id + "'");
+//    var pres: List[Course] =  List.empty;
+//    while(rs.next())
+//    	pres =  (new Course(rs.getString("id"), rs.getString("name"), rs.getInt("units"), Nil)) :: pres;
+//    
+//    crs.preRequisites = pres
+//    
     JDBCUtil.closeConnection(con);
     crs.start
     return crs
@@ -35,7 +44,29 @@ object CourseRepository {
 					
 	}
 	
+  def findPreRequisitesForCourse(course:Course): List[Course] = {
+    try {
+				var con: Connection = JDBCUtil.getConnection();
+			var st: Statement = con.createStatement();
+			var rs: ResultSet  = st.executeQuery("select * from prerequisites where course_id='" + course.id + "'");
 
+			
+			var prerequisites: List[Course] = List.empty;
+			while (rs.next()) {
+				prerequisites = (findById(rs.getString("pre_id"))) :: prerequisites;
+			}
+			JDBCUtil.closeConnection(con);
+			return prerequisites;
+		} catch {
+		  case ex:SQLException =>
+		    return null;
+		}
+    
+    
+    
+    
+    
+  }
 
   
   

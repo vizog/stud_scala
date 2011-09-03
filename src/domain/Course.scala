@@ -10,7 +10,8 @@ class Course(
   var id: String,
   var name: String,
   var units: Int,
-  var preRequisites: List[Course]) extends Actor with LoggingSupport {
+  var preRequisites: List[Course]) extends BaseDomainClass {
+	def this() = this(null, null, 0, Nil)
 
   override def act() {
     loop {
