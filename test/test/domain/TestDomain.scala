@@ -1,4 +1,4 @@
-package test.repository
+package test.domain
 import repository.CourseRepository;
 import repository.StudentRepository;
 import scala.actors.Actor;
@@ -29,28 +29,15 @@ class TesterActor extends Actor {
 
 }
 
-object TestRepository extends {
+object TestDomain extends {
 
   def main(args: Array[String]): Unit = {
 
     var testerActor = new TesterActor
     testerActor.start
-    testerActor ! testStudentHasPassed
-//    testerActor ! testStudentHasPassedPres
+//    testerActor ! testStudentHasPassed
+    testerActor ! testStudentHasPassedPres
 //    //    testerActor ! exit
-  }
-
-  protected def testCourseRepo() {
-    var course = CourseRepository.findById("ap")
-    course ! SayName;
-    receive {
-      case boogh: String =>
-        println("received " + boogh)
-    }
-    course ! ChangeName("NEW AP");
-    course ! SayName
-    course ! Save
-
   }
 
   private def testFuture() {
@@ -107,6 +94,7 @@ object TestRepository extends {
     course.preRequisites = pres
     var st = StudentRepository.findById("bebe")
     st.studyRecords = StudentRepository.findStudyRecords(st)
+    
     
     st ! HasPassedPreReqs(course, self)
 //    println(pres.size)

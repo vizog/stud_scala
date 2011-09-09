@@ -17,10 +17,11 @@ object StudentRepository {
     var rs: ResultSet = st.executeQuery("select * from student where id='" + id + "'");
 
     var stud: Student = null;
-    if (rs.next())
+    if (rs.next()) {
       stud = new Student(rs.getString("id"), rs.getString("name"), Nil);
+      stud.start
+    }
     JDBCUtil.closeConnection(con);
-    stud.start
     return stud
   }
 
@@ -46,7 +47,10 @@ object StudentRepository {
       var studyRecords: List[StudyRecord] = List.empty;
       while (rs.next()) {
         var offering: Offering = OfferingRepository.findById(rs.getString("offering_id"));
-        studyRecords = new StudyRecord(rs.getDouble("grade"), offering) :: studyRecords;
+        val str: StudyRecord = new StudyRecord(rs.getDouble("grade"), offering)
+        str.start
+        
+        studyRecords = str :: studyRecords;
       }
       JDBCUtil.closeConnection(con);
       return studyRecords;

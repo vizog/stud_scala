@@ -11,7 +11,7 @@ class Course(
   var name: String,
   var units: Int,
   var preRequisites: List[Course]) extends BaseDomainClass {
-	def this() = this(null, null, 0, Nil)
+  def this() = this(null, null, 0, Nil)
 
   override def act() {
     loop {
@@ -35,6 +35,17 @@ class Course(
 
   }
 
-  override def toString = "[name: " + name + " units: " + units + "]"
+  override def toString = "[course: id= " + id +", name " + name + ", units = " + units + "]"
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: Course =>
+        return (that canEqual this) &&
+          id == that.id
+          
+      case _ => false
+    }
 
+  def canEqual(other: Any): Boolean =
+    other.isInstanceOf[Course]
+  
 }
