@@ -9,6 +9,7 @@ trait StudentMessage
 case class ChangeName(name: String) extends StudentMessage
 case class HasPassed(course: Course, target: Actor) extends StudentMessage
 case class HasPassedPreReqs(course: Course, target: Actor) extends StudentMessage
+case class HasPassedPreReqs_FINE_GRAINED(course: Course, target: Actor) extends StudentMessage
 
 trait StudentMessageReply
 case class Passed(course: Course, pass: Boolean) extends StudentMessageReply
@@ -26,18 +27,23 @@ class Student(
   override def act() {
     loop {
       react {
-        case SayName =>
-          println(name)
-        //          debug("student debugging ...")
-        case SayId =>
-          println(id)
+        //////////
+        case HasPassedPreReqs_FINE_GRAINED(course, target) =>
+          debug(this + " received message: " + HasPassedPreReqs_FINE_GRAINED(course, target))
+          //for each course in prerequisites -> send a message to all study records.
+          for (pre <- course.preRequisites) {
+            sendToStudyReqs(HasPassed(pre, self))
+          }
+        //initialize counters or maps so that we know when all messages have bin answered
+        //but how do we know that the counters are not from previous HasPassedPreReqs_FINE_GRAINED?)
+        //maybe it is better to separate contexts of each message. prepare responses for each service 
+        //message and then start receiving other messages (?)
+          
 
-        case ChangeName(newName) =>
-          name = newName
-
+        //////////          
         case HasPassed(course, target) =>
           debug(this + " received message: " + HasPassed(course, target))
-//          val result: Boolean = hasPassed(course);
+          //          val result: Boolean = hasPassed(course);
           val result: Boolean = hasPassedWithFuture(course);
           target ! Passed(course, result)
 
@@ -48,6 +54,12 @@ class Student(
         case exit =>
           exit
       }
+    }
+  }
+
+  def sendToStudyReqs(msg: Any) {
+    for (sr <- studyRecords) {
+      sr ! msg
     }
   }
 
