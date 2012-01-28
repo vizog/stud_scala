@@ -23,23 +23,23 @@ class Offering(
         case SayId =>
           println(id)
         case IsYourCourse(crs, target) =>
-          debug( this + "received " + IsYourCourse(crs, target))
+          debug( this + " received " + IsYourCourse(crs, target))
           if (crs.equals(this.course)) {
-            debug( this + "replied true")
+            debug( this + " replied true")
             reply(true);
           } else {
-            debug(this + "replied false")
+            debug(this + " replied false")
             reply(false);
 
           }
           
         case HasPassed2(crs, target) =>
-        debug( this + "received " + HasPassed2(crs, target))
+        debug( this + " received " + HasPassed2(crs, target))
         if (crs.equals(this.course)) {
-        	debug( this + "replied true")
+        	debug( this + " replied true")
         	target ! Passed(crs,true);
         } else {
-        	debug(this + "replied false")
+        	debug(this + " replied false")
         	target ! Passed(crs,false);
         }
 
