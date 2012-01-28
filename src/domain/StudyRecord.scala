@@ -24,13 +24,15 @@ class StudyRecord(
         case AreYouAPassCourseRecord(course, target) =>
           debug("[StudyRec:" + this + "] received: AreYouAPassCourseRecord("+course+", "+target+")");
           if (grade < 10) {
-            debug("[StudyRec:" + this + "] sent: Passed(" + course + ", false)");
-            reply(Passed(course, false));
+            debug("[StudyRec:" + this + "] sent: Passed(" + course + ", false) to " + target);
+            target !Passed(course, false);
+//           	reply(Passed(course, false));
           }
           else {
             val res = offering !? IsYourCourse(course, self)
-            debug("[StudyRec:" + this + "] sent: Passed(" + course + ", " + res + ")");
-            reply(Passed(course, res.asInstanceOf[Boolean]))
+            debug("[StudyRec:" + this + "] sent: Passed(" + course + ", " + res + ") + to " + target);
+            target ! Passed(course, res.asInstanceOf[Boolean])
+//            reply(Passed(course, res.asInstanceOf[Boolean]))
           }
         case exit =>
           exit

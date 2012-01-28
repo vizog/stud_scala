@@ -9,7 +9,7 @@ import domain.SayName;
 import domain.ChangeName;
 import domain.Save;
 import domain.Student;
-import domain.HasPassed;
+import domain.HasPassed1;
 import domain.HasPassedPreReqs;
 
 case class TestCase(testFunc: () => Unit)
@@ -67,7 +67,7 @@ object TestDomain extends {
     var st = StudentRepository.findById("bebe")
     st.studyRecords = StudentRepository.findStudyRecords(st)
     st.start
-    st ! HasPassed(course, self)
+    st ! HasPassed1(course, self)
     receive {
       case "hello" =>
         println("dsf")
@@ -81,7 +81,7 @@ object TestDomain extends {
     var st = StudentRepository.findById("bebe")
     st.studyRecords = StudentRepository.findStudyRecords(st)
     st.start
-    st ! HasPassed(course, self)
+    st ! HasPassed1(course, self)
 
     receive {
       case "hello" =>

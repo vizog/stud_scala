@@ -9,37 +9,18 @@ import domain.SayName
 import domain.ChangeName
 import domain.Save
 import domain.Student
-import domain.HasPassed
-import domain.HasPassedPreReqs;
+import domain.HasPassed1
+import domain.HasPassedPreReqs
 import domain.HasPassedPreReqs_FINE_GRAINED
-
-case class TestCase(testFunc: () => Unit)
-
-class TesterActor extends Actor {
-
-  override def act() {
-    loop {
-      react {
-        case TestCase(testFunc) =>
-          testFunc()
-        case exit =>
-          exit
-      }
-    }
-  }
-
-}
+import domain.HasPassed2
+import domain.Passed
+import util.LoggingSupport
+import org.apache.log4j.Logger
 
 object TestRepository extends {
 
   def main(args: Array[String]): Unit = {
-
-    var testerActor = new TesterActor
-    testerActor.start
-//    testerActor ! testStudentHasPassed
-    testerActor ! testStudentHasPassed
-//    testerActor ! testStudentHasPassedPres
-//    //    testerActor ! exit
+    testStudentHasPassed2
   }
 
   protected def testCourseRepo() {
@@ -82,7 +63,7 @@ object TestRepository extends {
     var st = StudentRepository.findById("bebe")
     st.studyRecords = StudentRepository.findStudyRecords(st)
     st.start
-    st ! HasPassed(course, self)
+    st ! HasPassed1(course, self)
     receive {
       case "hello" =>
         println("dsf")
@@ -96,22 +77,30 @@ object TestRepository extends {
     var st = StudentRepository.findById("bebe")
     st.studyRecords = StudentRepository.findStudyRecords(st)
     st.start
-    st ! HasPassed(course, self)
+    st ! HasPassed1(course, self)
 
-//    receive {
-//      case "hello" =>
-//        println("dsf")
-//    }
+    //    receive {
+    //      case "hello" =>
+    //        println("dsf")
+    //    }
   }
-  private def testStudentHasPassedFineGrained() {
-	  var course: Course = CourseRepository.findById("ap");
-  val pres: List[Course] = CourseRepository.findPreRequisitesForCourse(course)
-		  course.preRequisites = pres
-		  course.start
-		  var st = StudentRepository.findById("bebe")
-		  st.studyRecords = StudentRepository.findStudyRecords(st)
-		  st.start
-		  st ! HasPassedPreReqs_FINE_GRAINED(course, self)
+  private def testStudentHasPassed2() {
+    var course: Course = CourseRepository.findById("ap");
+    val pres: List[Course] = CourseRepository.findPreRequisitesForCourse(course)
+    course.preRequisites = pres
+    course.start
+    var st = StudentRepository.findById("bebe")
+    st.studyRecords = StudentRepository.findStudyRecords(st)
+    st.start
+    Logger.getLogger(getClass()).debug("self: " + self)
+    st ! HasPassed2(course, st)
+//    receive {
+//      case Passed(course, _) =>
+//        Logger.getLogger("Received: " + Passed(course, true))
+//      case result: Any =>
+//        Logger.getLogger("Received: " + result)
+//
+//    }
   }
   private def testStudentHasPassedPres() {
     var course: Course = CourseRepository.findById("ds");
@@ -119,12 +108,12 @@ object TestRepository extends {
     course.preRequisites = pres
     var st = StudentRepository.findById("bebe")
     st.studyRecords = StudentRepository.findStudyRecords(st)
-    
+
     st ! HasPassedPreReqs(course, self)
-//    println(pres.size)
+    //    println(pres.size)
 
     receive {
-      case result:Any =>
+      case result: Any =>
         println(result)
     }
   }
