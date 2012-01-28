@@ -32,6 +32,16 @@ class Offering(
             reply(false);
 
           }
+          
+        case HasPassed2(crs, target) =>
+        debug( this + "received " + HasPassed2(crs, target))
+        if (crs.equals(this.course)) {
+        	debug( this + "replied true")
+        	target ! Passed(crs,true);
+        } else {
+        	debug(this + "replied false")
+        	target ! Passed(crs,false);
+        }
 
         case exit =>
           exit
