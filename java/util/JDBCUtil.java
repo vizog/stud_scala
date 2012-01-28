@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class JDBCUtil {
 
 	// static final String CONN_STR = "jdbc:hsqldb:hsql://localhost/";
-	static final String CONN_STR = "jdbc:mysql://localhost/test?user=root&password=root";
+	static final String CONN_STR = "jdbc:mysql://localhost/edu?user=edu&password=edu";
 
 	static {
 		try {
