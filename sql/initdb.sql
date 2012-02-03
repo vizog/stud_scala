@@ -4,6 +4,7 @@ create database if not exists test;
 use test;
 
 
+ 
 drop table if exists study_record;
 drop table if exists prerequisites;
 drop table if exists offering;
