@@ -9,7 +9,8 @@ trait StudyRecordMessage
 trait StudyRecordMessageReply
 
 case object SayGrade extends StudyRecordMessage
-case class AreYouAPassCourseRecord(course: Course, target: Actor) extends StudyRecordMessage
+case class AreYouAPassCourseRequest(course: Course, target: Actor) extends StudyRecordMessage
+case class AreYouAPassCourseResponse(course: Course, result:Boolean) extends StudyRecordMessage
 
 class StudyRecord(
   var grade: Double,
@@ -18,31 +19,20 @@ class StudyRecord(
   def act() {
     loop {
       react {
-        case SayGrade =>
-          println(grade)
-
-        case AreYouAPassCourseRecord(course, target) =>
+        case AreYouAPassCourseRequest(course, target) =>
+          
           debug("[StudyRec:" + this + "] received: AreYouAPassCourseRecord(" + course + ", " + target + ")");
           if (grade < 10) {
             debug("[StudyRec:" + this + "] sent: Passed(" + course + ", false) to " + target);
-            target ! Passed(course, false);
+            sender ! AreYouAPassCourseResponse(course, false);
           } else {
-            offering ! HasPassed2(course, target)
-            debug("[StudyRec:" + this + "] sent: HasPassed2(" + course + ", " + target + ") + to " + offering);
+        	offering ! IsYourCourseRequest(course, target)
+            debug("[StudyRec:" + this + "] sent: HasPassed2(" + course + ", " + self + ") + to " + offering);
           }
-        //        case AreYouAPassCourseRecord(course, target) =>
-        //          debug("[StudyRec:" + this + "] received: AreYouAPassCourseRecord("+course+", "+target+")");
-        //          if (grade < 10) {
-        //            debug("[StudyRec:" + this + "] sent: Passed(" + course + ", false) to " + target);
-        //            target !Passed(course, false);
-        ////           	reply(Passed(course, false));
-        //          }
-        //          else {
-        //            val res = offering !? IsYourCourse(course, self)
-        //            debug("[StudyRec:" + this + "] sent: Passed(" + course + ", " + res + ") + to " + target);
-        //            target ! Passed(course, res.asInstanceOf[Boolean])
-        ////            reply(Passed(course, res.asInstanceOf[Boolean]))
-        //          }
+          
+        case IsYourCourseResponse(course, result, target) => //this come from Offering. the response should be sent to StudentCoursePassActor
+          target ! AreYouAPassCourseResponse(course, result)
+          println
         case exit =>
           exit
       }
