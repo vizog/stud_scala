@@ -19,7 +19,8 @@ public class JDBCUtil {
 			System.err.println("Unable to load MySQL JDBC driver");
 		}
 	}
-
+	
+	
 	public synchronized static Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(CONN_STR,"edu","edu");
 	}
