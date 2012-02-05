@@ -1,108 +1,100 @@
 package test.domain
-import repository.CourseRepository;
-import repository.StudentRepository;
-import scala.actors.Actor;
-import scala.actors.Actor._;
-import java.util.Date;
-import domain.Course;
-import domain.SayName;
-import domain.ChangeName;
-import domain.Save;
-import domain.Student;
-import domain.HasPassed;
-import domain.HasPassedPreReqs;
+import repository.CourseRepository
+import repository.StudentRepository
+import scala.actors.Actor
+import scala.actors.Actor._
+import java.util.Date
+import domain.Course
+import domain.SayName
+import domain.ChangeName
+import domain.Save
+import domain.Student
+import domain.HasPassedPreReqs
+import domain.HasPassedPreReqs_FINE_GRAINED
+import domain.Passed
+import util.LoggingSupport
+import org.apache.log4j.Logger
+import org.junit.Test
+import junit.framework.Assert
+import scala.actors.TIMEOUT
+import org.junit.Before
+import domain.HasPassed
 
-case class TestCase(testFunc: () => Unit)
+class TestDomain {
 
-class TesterActor extends Actor {
+  var ap, math1, ds: Course = null
+  var pres: List[Course] = null
+  var bebe: Student = null
 
-  override def act() {
-    loop {
-      react {
-        case TestCase(testFunc) =>
-          testFunc()
-        case exit =>
-          exit
-      }
+  @Before def initialize() {
+    ap = CourseRepository.findById("ap")
+    ap.preRequisites = CourseRepository.findPreRequisitesForCourse(ap)
+    ap.start
+
+    math1 = CourseRepository.findById("math1")
+    math1.preRequisites = CourseRepository.findPreRequisitesForCourse(math1)
+    math1.start
+
+    ds = CourseRepository.findById("ds")
+    ds.preRequisites = CourseRepository.findPreRequisitesForCourse(ds)
+    ds.start
+
+    bebe = StudentRepository.findById("bebe")
+    bebe.studyRecords = StudentRepository.findStudyRecords(bebe)
+    bebe.start
+
+  }
+
+  @Test def testStudentHasPassed1() {
+
+    bebe ! HasPassed(ap, self)
+
+    receiveWithin(500) {
+
+      case Passed(ap, result) =>
+        Logger.getLogger(getClass()).debug("received final response: " + Passed(ap, result))
+        Assert.assertEquals(result, true)
+
+      case TIMEOUT =>
+        Assert.fail("time out")
+
+      case a: Any =>
+        Assert.fail("received other:" + a)
     }
   }
+  
+  @Test def testStudentHasPassed2() {
 
-}
+    bebe ! HasPassed(math1, self)
 
-object TestDomain extends {
+    receiveWithin(500) {
+      case Passed(math11, result) =>
+        Logger.getLogger(getClass()).debug("received final response: " + Passed(math11, result))
+        Assert.assertEquals(result, false)
 
-  def main(args: Array[String]): Unit = {
+      case TIMEOUT =>
+        Assert.fail("time out")
 
-    var testerActor = new TesterActor
-    testerActor.start
-//    testerActor ! testStudentHasPassed
-    testerActor ! testStudentHasPassedPres
-//    //    testerActor ! exit
-  }
-
-  private def testFuture() {
-    var course: Course = CourseRepository.findById("ap")
-
-    println(new Date() + " sending sayName to course")
-    val future = course !! SayName;
-    println(new Date() + " calling future ...")
-    println("future: " + future())
-    println(new Date() + " called future !")
-
-  }
-
-  private def testSync() {
-    var course: Course = CourseRepository.findById("ap")
-    println(new Date() + " sending sayName to course")
-    val response = course !? SayName;
-    println(new Date() + " received response: " + response)
-
-  }
-
-  private def testStudent() {
-    var course: Course = CourseRepository.findById("ds");
-    val pres: List[Course] = CourseRepository.findPreRequisitesForCourse(course)
-    course.preRequisites = pres
-    course.start
-    var st = StudentRepository.findById("bebe")
-    st.studyRecords = StudentRepository.findStudyRecords(st)
-    st.start
-    st ! HasPassed(course, self)
-    receive {
-      case "hello" =>
-        println("dsf")
+      case a: Any =>
+        Assert.fail("received other:" + a)
     }
   }
-  private def testStudentHasPassed() {
-    var course: Course = CourseRepository.findById("ap");
-    val pres: List[Course] = CourseRepository.findPreRequisitesForCourse(course)
-    course.preRequisites = pres
-    course.start
-    var st = StudentRepository.findById("bebe")
-    st.studyRecords = StudentRepository.findStudyRecords(st)
-    st.start
-    st ! HasPassed(course, self)
+  
+  @Test def testStudentHasPassed3() {
+    bebe ! HasPassed(ds, self)
 
-    receive {
-      case "hello" =>
-        println("dsf")
-    }
-  }
-  private def testStudentHasPassedPres() {
-    var course: Course = CourseRepository.findById("ds");
-    val pres: List[Course] = CourseRepository.findPreRequisitesForCourse(course)
-    course.preRequisites = pres
-    var st = StudentRepository.findById("bebe")
-    st.studyRecords = StudentRepository.findStudyRecords(st)
-    
-    
-    st ! HasPassedPreReqs(course, self)
-//    println(pres.size)
+    receiveWithin(500) {
+      case Passed(ds, result) =>
+        Logger.getLogger(getClass()).debug("received final response: " + Passed(ds, result))
+        Assert.assertEquals(result, false)
 
-    receive {
-      case result:Any =>
-        println(result)
+      case TIMEOUT =>
+        Assert.fail("time out")
+
+      case a: Any =>
+        Assert.fail("received other:" + a)
     }
+
   }
 
 }
