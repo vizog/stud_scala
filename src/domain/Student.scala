@@ -44,7 +44,7 @@ class Student(
         case HasPassed1(course, target) =>
           //APPROACH 1
           debug(this + " received message: " + HasPassed1(course, target))
-          //          val result: Boolean = hasPassed(course);
+//          val result: Boolean = hasPassed(course);
 //          val result: Boolean = hasPassedWithFuture(course);
           val result: Boolean = hasPassed(course);
           target ! Passed(course, result)
