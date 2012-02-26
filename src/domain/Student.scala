@@ -63,8 +63,12 @@ class Student(
           debug(this + " received message: " + HasPassedPreReqs(course, target))
           val result: Boolean = hasPassedPreReqs(course)
           target ! PassedPres(course, result)
+        case "sayName" =>
+          println(name);
+          
         case exit =>
           exit
+          
       }
     }
   }
