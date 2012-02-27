@@ -1,7 +1,7 @@
 set global max_connections = 1000;
 
-create database if not exists test;
-use test;
+create database if not exists edu;
+use edu;
 
 
  

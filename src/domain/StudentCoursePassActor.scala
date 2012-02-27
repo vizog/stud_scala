@@ -38,8 +38,6 @@ class StudentCoursePassActor(
         case a: Any =>
           debug(this + " received " + a)
 
-        case _ =>
-          debug("hahaha")
       }
     }
   }

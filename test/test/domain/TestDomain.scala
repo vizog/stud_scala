@@ -19,6 +19,8 @@ import org.junit.Test
 import junit.framework.Assert
 import scala.actors.TIMEOUT
 import org.junit.Before
+import domain.TakeCourse
+import domain.TakeCourseResponse
 
 class TestDomain {
 
@@ -63,6 +65,23 @@ class TestDomain {
     }
   }
   
+   @Test def testStudentTakeCourse() {
+
+    bebe ! TakeCourse(ds, self)
+
+    receiveWithin(500) {
+
+      case TakeCourseResponse(result, comment) =>
+        Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
+        Assert.assertEquals(result, false)
+
+      case TIMEOUT =>
+        Assert.fail("time out")
+
+      case a: Any =>
+        Assert.fail("received other:" + a)
+    }
+  }
   @Test def testStudentHasPassed2() {
 
     bebe ! HasPassed3(math1, self)

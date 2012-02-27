@@ -6,6 +6,7 @@ import scala.actors.Actor._;
 //messages:
 
 trait StudentMessage
+case class TakeCourse(course: Course, target:Actor) extends StudentMessage
 case class ChangeName(name: String) extends StudentMessage
 case class HasPassed3(course: Course, target: Actor) extends StudentMessage
 case class HasPassedPreReqs(course: Course, target: Actor) extends StudentMessage
@@ -28,12 +29,20 @@ class Student(
     loop {
       react {
         //////////
+        case TakeCourse(course, target) =>
+          //validate (has not passed the course itself, has passed pre reqs ...)
+          var takeCourse = new StudentTakeCourseActor(this)
+          takeCourse.start();
+          takeCourse ! TakeCourse(course, target)
+    
         case HasPassed3(course, target) =>
           //APPROACH 3
           debug(this + " received message: " + HasPassed3(course, target))
           var coursePassActor  = new StudentCoursePassActor(this)
           coursePassActor.start
           coursePassActor ! HasPassed3(course, target)
+          
+          
 
         case exit =>
           exit
