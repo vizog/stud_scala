@@ -46,7 +46,7 @@ class StudentCoursePassActor(
     for (sr <- student.studyRecords)
       sr ! AreYouAPassCourseRequest(course, self)
   }
-
+  
   def sendResponse(course: Course, result: Boolean) {
     target ! Passed(course, result)
     exit

@@ -1,6 +1,6 @@
 package domain
 
-import scala.actors.Actor;
+import scala.actors.Actor
 import scala.actors.Actor._;
 
 class StudentPassPreReqsActor(
@@ -20,7 +20,12 @@ class StudentPassPreReqsActor(
           target = target_
 
           debug(this + " received message: " + HasPassedPreReqs(course, target_))
-          hasPassedPreReqs(course);
+          if(course.preRequisites.size == 0) {
+            debug(course + " has no prerequisites so we send " + PassedPres(course, true))
+            target ! PassedPres(course, true)
+          } else {
+        	  hasPassedPreReqs(course);
+          }
 
         case Passed(pre, false) =>
           target ! PassedPres(course, false)

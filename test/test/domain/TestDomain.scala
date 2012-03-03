@@ -21,10 +21,16 @@ import scala.actors.TIMEOUT
 import org.junit.Before
 import domain.TakeCourse
 import domain.TakeCourseResponse
+import domain.Offering
+import repository.OfferingRepository
+import domain.HasPassedPreReqs
+import domain.StudentPassPreReqsActor
+import domain.PassedPres
 
 class TestDomain {
 
   var ap, math1, ds: Course = null
+  var dsOffering, dmOffering, math11: Offering = null
   var pres: List[Course] = null
   var bebe: Student = null
 
@@ -32,6 +38,14 @@ class TestDomain {
     ap = CourseRepository.findById("ap")
     ap.preRequisites = CourseRepository.findPreRequisitesForCourse(ap)
     ap.start
+
+    dsOffering = OfferingRepository.findById("ds1")
+    dsOffering.start
+    
+    dmOffering = OfferingRepository.findById("dm1")
+    dmOffering.start
+    math11 = OfferingRepository.findById("math11")
+    math11.start
 
     math1 = CourseRepository.findById("math1")
     math1.preRequisites = CourseRepository.findPreRequisitesForCourse(math1)
@@ -51,7 +65,7 @@ class TestDomain {
 
     bebe ! HasPassed3(ap, self)
 
-    receiveWithin(500) {
+    receiveWithin(2000) {
 
       case Passed(ap, result) =>
         Logger.getLogger(getClass()).debug("received final response: " + Passed(ap, result))
@@ -64,15 +78,16 @@ class TestDomain {
         Assert.fail("received other:" + a)
     }
   }
-  
-   @Test def testStudentTakeCourse() {
 
-    bebe ! TakeCourse(ds, self)
+  @Test def testStudentTakeCourse1() {
 
-    receiveWithin(500) {
+    bebe ! TakeCourse(dsOffering, self)
+
+    receiveWithin(5000) {
 
       case TakeCourseResponse(result, comment) =>
         Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
+        //bebe has not passed all prerequisites of ds  ( -> dm)
         Assert.assertEquals(result, false)
 
       case TIMEOUT =>
@@ -81,7 +96,45 @@ class TestDomain {
       case a: Any =>
         Assert.fail("received other:" + a)
     }
+    
   }
+  @Test def testStudentTakeCourse2() {
+	  
+	  bebe ! TakeCourse(dmOffering, self)
+	  
+	  receiveWithin(5000) {
+		  
+	  case TakeCourseResponse(result, comment) =>
+	  Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
+	  //should not be able to take dm (hasn't passed math1)
+	  Assert.assertEquals(result, false)
+	  
+	  case TIMEOUT =>
+	  Assert.fail("time out")
+	  
+	  case a: Any =>
+	  Assert.fail("received other:" + a)
+	  }
+  }
+  @Test def testStudentTakeCourse3() {
+	  
+	  bebe ! TakeCourse(math11, self)
+	  receiveWithin(5000) {
+		  
+	  case TakeCourseResponse(result, comment) =>
+	  Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
+	  //bebe has already taken math1, should reply false
+	  Assert.assertEquals(result, false)
+	  
+	  case TIMEOUT =>
+	  Assert.fail("time out")
+	  
+	  case a: Any =>
+	  Assert.fail("received other:" + a)
+	  }
+  }
+  
+  
   @Test def testStudentHasPassed2() {
 
     bebe ! HasPassed3(math1, self)
@@ -98,7 +151,26 @@ class TestDomain {
         Assert.fail("received other:" + a)
     }
   }
-  
+
+  @Test def testStudentHasPassedPres() {
+
+    val coursePassPres = new StudentPassPreReqsActor(bebe)
+    coursePassPres.start
+    coursePassPres ! HasPassedPreReqs(ds, self);
+    
+    receiveWithin(500) {
+      case PassedPres(ds, result)=>
+        Logger.getLogger(getClass()).debug("received final response: " + PassedPres(ds, result))
+        Assert.assertEquals(result, false)
+
+      case TIMEOUT =>
+        Assert.fail("time out")
+
+      case a: Any =>
+        Assert.fail("received other:" + a)
+    }
+  }
+
   @Test def testStudentHasPassed3() {
     bebe ! HasPassed3(ds, self)
 

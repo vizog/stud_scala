@@ -1,8 +1,9 @@
 package domain
 
 import scala.actors.Actor
-import scala.actors.Actor._;
+import scala.actors.Actor._
 import scala.actors.OutputChannel
+import repository.StudentRepository
 
 case class TakeCourseResponse(result: Boolean, comment: String)
 
@@ -11,34 +12,43 @@ class StudentTakeCourseActor(
   var student: Student) extends BaseDomainClass {
   def this() = this(null)
 
-  private var course: Course = null
-  private var target: Actor  = null
+  private var offering: Offering = null
+  private var target: Actor = null
   private var numOfResponses: Int = 0
 
   override def act() {
     loop {
       react {
-        case TakeCourse(course_,target_) =>
-          course = course_
+        case TakeCourse(offering_, target_) =>
+          offering = offering_
           target = target_
-          debug(this + " received " + TakeCourse(course_,target_))
+          debug(this + " received " + TakeCourse(offering, target_))
           //validate : 
           //check that he/she has not already passed the course:
-          student ! HasPassed3(course, this)
-
+          student ! HasPassed3(offering.course, this)
+          
           //check that student has passed all prerequisites:
           val coursePassPres = new StudentPassPreReqsActor(student)
           coursePassPres.start
-          coursePassPres ! HasPassedPreReqs(course, this)
+          coursePassPres ! HasPassedPreReqs(offering.course, this)
+          //check that student has not already taken this course
+          student ! HasTaken(offering.course, this)
+
 
         case Passed(course, true) =>
           sendResponse(false, "student " + student + " has already passed the course: " + course)
-
 
         case Passed(course, false) =>
           debug("validate -> already passsed? -> OK.  Stepping forward")
           stepForward()
 
+        case Taken(course, true) =>
+          sendResponse(false, "student " + student + " has already taken the course: " + course)
+          
+        case Taken(course, false) =>
+          debug("validate -> already taken? -> OK.  Stepping forward")
+          stepForward()
+          
         case PassedPres(course, false) =>
           debug("validate -> passed pres? -> FAIL")
           sendResponse(false, "student " + student + " has not passed all prerequisites for the course: " + course)
@@ -46,19 +56,29 @@ class StudentTakeCourseActor(
         case PassedPres(course, true) =>
           debug("validate -> passed pres? -> OK. Stepping forward")
           stepForward()
+        case other:Any =>
+          println("********************" + other)
       }
     }
-    def stepForward() {
-      numOfResponses += 1
-      if(numOfResponses == 2)//2 validation steps (already passed and passed prerequisites)
-        sendResponse(true,"all checks have passed")
-    }
   }
-  
-  def sendResponse(result:Boolean, comment:String) {
-	  target ! TakeCourseResponse(result,comment)
-	  exit
-  } 
+  def stepForward() {
+	  numOfResponses += 1
+			  if (numOfResponses == 3) {
+				  //2 validation steps (already passed and passed prerequisites)
+				  //take the course
+				  val sr:StudyRecord = new StudyRecord(-1,offering)
+	  StudentRepository.saveStudyRecord(student,sr)
+	  debug("student " + student + " successfully took course: " + offering.course )
+	  sendResponse(true, "all checks have passed")
+	  
+	  
+			  }
+  }
+
+  def sendResponse(result: Boolean, comment: String) {
+    target ! TakeCourseResponse(result, comment)
+    exit
+  }
 
   override def toString = "[StudentTakeCourseActor of " + student + "]"
 
