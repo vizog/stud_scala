@@ -4,9 +4,6 @@ import scala.actors.Actor
 import java.sql.Date
 
 //messages:
-trait OfferingMsg
-case class IsYourCourseRequest(course: Course, target: Actor) extends OfferingMsg
-case class IsYourCourseResponse(course: Course, result:Boolean, target: Actor) extends OfferingMsg
 
 
 

@@ -5,14 +5,6 @@ import scala.actors.Actor._;
 
 //messages:
 
-trait StudyRecordMessage
-trait StudyRecordMessageReply
-
-case object SayGrade extends StudyRecordMessage
-case class AreYouAPassCourseRequest(course: Course, target: Actor) extends StudyRecordMessage
-case class AreYouCurrentTermCourseRequest(course: Course, target: Actor) extends StudyRecordMessage
-case class AreYouAPassCourseResponse(course: Course, result: Boolean) extends StudyRecordMessage
-case class AreYouCurrentTermCourseResponse(course: Course, result: Boolean) extends StudyRecordMessage
 
 class StudyRecord(
   var grade: Double,
