@@ -7,8 +7,10 @@ import java.sql.ResultSet
 import java.sql.SQLException
 import domain.StudyRecord
 import domain.Offering
+import java.sql.PreparedStatement
+import util.LoggingSupport
 
-object StudentRepository {
+object StudentRepository extends BaseRepository with LoggingSupport {
 
   def findById(id: String): Student = {
 
@@ -59,6 +61,23 @@ object StudentRepository {
         return null;
     }
 
+  }
+  
+  def saveStudyRecord(stud: Student, sr:StudyRecord) = {
+		  try {
+			  var con: Connection = JDBCUtil.getConnection();
+		  var st: PreparedStatement = con.prepareStatement("insert into study_record(student_id,offering_id,grade) values(?,?,?)");
+		  st.setString(1,stud.id);
+		  st.setString(2,sr.offering.id);
+		  st.setInt(3,-1);
+		  st.execute()
+		  debug("saved studyRecord: " + sr)
+		  JDBCUtil.closeConnection(con);
+		  } catch {
+		  case ex: SQLException =>
+		    ex.printStackTrace()
+		  }
+		  
   }
 
 }

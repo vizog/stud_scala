@@ -4,8 +4,6 @@ import scala.actors.Actor
 import java.sql.Date
 
 //messages:
-trait OfferingMsg
-case class IsYourCourse(course: Course, target: Actor) extends OfferingMsg
 
 
 
@@ -22,17 +20,16 @@ class Offering(
       react {
         case SayId =>
           println(id)
-        case IsYourCourse(crs, target) =>
-          debug( this + "received " + IsYourCourse(crs, target))
+        case IsYourCourseRequest(crs, target) =>
+          debug( this + "received " + IsYourCourseRequest(crs, target))
           if (crs.equals(this.course)) {
             debug( this + "replied true")
-            reply(true);
+            sender ! IsYourCourseResponse(crs, true, target)
           } else {
             debug(this + "replied false")
-            reply(false);
-
+            sender ! IsYourCourseResponse(crs, false, target)
           }
-
+          
         case exit =>
           exit
       }

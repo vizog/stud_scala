@@ -1,8 +1,10 @@
 set global max_connections = 1000;
 
-create database if not exists test;
-use test;
+create database if not exists edu;
+use edu;
 
+
+ 
 drop table if exists study_record;
 drop table if exists prerequisites;
 drop table if exists offering;
@@ -46,11 +48,12 @@ create table student (
 );
 
 create table study_record (
+	id MEDIUMINT NOT NULL AUTO_INCREMENT,
 	student_id varchar(20) not null,
 	offering_id varchar (20) not null,
 	grade double default 0.0,
 	
-	primary key (student_id, offering_id),
+	primary key (id),
 	
 	constraint student_fk foreign key(student_id) references student(id),
 	constraint offering_fk foreign key(offering_id) references offering(id)
@@ -103,9 +106,9 @@ insert into offering values('lang2b', 'lang', 2, '2010-06-08', '88-89-2');
 insert into student values('bebe', 'Bebe');
 insert into student values('xi', 'Xi');
 
-insert into study_record values('bebe', 'ap1', 18.0);
-insert into study_record values('bebe', 'stat1', 12.0);
-insert into study_record values('bebe', 'math11', 8.4);
+insert into study_record(student_id,offering_id,grade) values('bebe', 'ap1', 18.0);
+insert into study_record(student_id,offering_id,grade) values('bebe', 'stat1', 12.0);
+insert into study_record(student_id,offering_id,grade) values('bebe', 'math11', 8.4);
 
 insert into prerequisites values ('ds', 'ap');
 insert into prerequisites values ('ds', 'dm');
