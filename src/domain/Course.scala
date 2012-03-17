@@ -16,13 +16,6 @@ class Course(
   override def act() {
     loop {
       react {
-        case SayName =>
-          println(new java.util.Date() + " course  " + this + " received SayName")
-          debug("waiting for 10 secs ... ")
-          Thread.sleep(10000)
-          reply(name)
-        case SayId =>
-          println(id)
         case ChangeName(newName) =>
           println("changing the old name : '" + name + "' to new name : '" + newName + "'")
           name = newName

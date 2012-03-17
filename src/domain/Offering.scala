@@ -4,10 +4,6 @@ import scala.actors.Actor
 import java.sql.Date
 
 //messages:
-
-
-
-
 class Offering(
   var id: String,
   var course: Course,
@@ -18,18 +14,17 @@ class Offering(
   override def act() {
     loop {
       react {
-        case SayId =>
-          println(id)
         case IsYourCourseRequest(crs, target) =>
           debug( this + "received " + IsYourCourseRequest(crs, target))
           if (crs.equals(this.course)) {
             debug( this + "replied true")
-            sender ! IsYourCourseResponse(crs, true, target)
+            reply(true);
           } else {
             debug(this + "replied false")
-            sender ! IsYourCourseResponse(crs, false, target)
+            reply(false);
+
           }
-          
+
         case exit =>
           exit
       }

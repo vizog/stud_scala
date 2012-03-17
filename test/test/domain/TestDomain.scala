@@ -5,7 +5,6 @@ import scala.actors.Actor
 import scala.actors.Actor._
 import java.util.Date
 import domain.Course
-import domain.SayName
 import domain.ChangeName
 import domain.Save
 import domain.Student
@@ -24,7 +23,6 @@ import domain.TakeCourseResponse
 import domain.Offering
 import repository.OfferingRepository
 import domain.HasPassedPreReqs
-import domain.StudentPassPreReqsActor
 import domain.PassedPres
 
 class TestDomain {
@@ -154,9 +152,7 @@ class TestDomain {
 
   @Test def testStudentHasPassedPres() {
 
-    val coursePassPres = new StudentPassPreReqsActor(bebe)
-    coursePassPres.start
-    coursePassPres ! HasPassedPreReqs(ds, self);
+    bebe ! HasPassedPreReqs(ds, self);
     
     receiveWithin(500) {
       case PassedPres(ds, result)=>
