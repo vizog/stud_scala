@@ -25,12 +25,12 @@ class Student(
           takeCourse.start();
           takeCourse ! TakeCourse(offering, target)
     
-        case HasPassed3(course, target) =>
+        case HasPassed(course, target) =>
           //APPROACH 3
-          debug(this + " received message: " + HasPassed3(course, target))
+          debug(this + " received message: " + HasPassed(course, target))
           val coursePassActor  = new StudentCoursePassActor(this)
           coursePassActor.start
-          coursePassActor ! HasPassed3(course, target)
+          coursePassActor ! HasPassed(course, target)
           
           
         case HasTaken(course, target) =>

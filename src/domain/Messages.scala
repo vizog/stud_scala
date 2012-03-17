@@ -6,8 +6,9 @@ import scala.actors.Actor
 
 trait StudentMessage
 case class TakeCourse(offering: Offering, target:Actor) extends StudentMessage
+case class TakeCourseResponse(result: Boolean, comment: String) extends StudentMessage
 case class ChangeName(name: String) extends StudentMessage
-case class HasPassed3(course: Course, target: Actor) extends StudentMessage
+case class HasPassed(course: Course, target: Actor) extends StudentMessage
 case class HasTaken(course: Course, target: Actor)
 case class HasPassedPreReqs(course: Course, target: Actor) extends StudentMessage
 case class HasPassedPreReqs_FINE_GRAINED(course: Course, target: Actor) extends StudentMessage

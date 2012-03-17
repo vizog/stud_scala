@@ -5,8 +5,6 @@ import scala.actors.Actor._
 import scala.actors.OutputChannel
 import repository.StudentRepository
 
-case class TakeCourseResponse(result: Boolean, comment: String)
-
 class StudentTakeCourseActor(
 
   var student: Student) extends BaseDomainClass {
@@ -25,7 +23,7 @@ class StudentTakeCourseActor(
           debug(this + " received " + TakeCourse(offering, target_))
           //validate : 
           //check that he/she has not already passed the course:
-          student ! HasPassed3(offering.course, this)
+          student ! HasPassed(offering.course, this)
           
           //check that student has passed all prerequisites:
           val coursePassPres = new StudentPassPreReqsActor(student)

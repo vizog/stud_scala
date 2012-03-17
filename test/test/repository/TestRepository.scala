@@ -14,7 +14,7 @@ import domain.HasPassedPreReqs_FINE_GRAINED
 import domain.Passed
 import util.LoggingSupport
 import org.apache.log4j.Logger
-import domain.HasPassed3
+import domain.HasPassed
 
 object TestRepository extends {
 
@@ -62,7 +62,7 @@ object TestRepository extends {
     st.studyRecords = StudentRepository.findStudyRecords(st)
     st.start
     Logger.getLogger(getClass()).debug("self: " + self)
-    st ! HasPassed3(course, st)
+    st ! HasPassed(course, st)
 //    receive {
 //      case Passed(course, _) =>
 //        Logger.getLogger("Received: " + Passed(course, true))

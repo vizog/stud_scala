@@ -48,7 +48,7 @@ class StudentPassPreReqsActor(
 
   def hasPassedPreReqs(course: Course) = {
     for (pre <- course.preRequisites)
-      student ! HasPassed3(pre, this)
+      student ! HasPassed(pre, this)
   }
 
   override def toString = "[StudentPassPreReqsActor of " + student + "]"

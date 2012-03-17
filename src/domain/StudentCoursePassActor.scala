@@ -14,9 +14,9 @@ class StudentCoursePassActor(
     loop {
       react {
 
-        case HasPassed3(course, target_) =>
+        case HasPassed(course, target_) =>
 
-          debug(this + " received message: " + HasPassed3(course, target_ ))
+          debug(this + " received message: " + HasPassed(course, target_ ))
           target = target_
           hasPassed(course);
 

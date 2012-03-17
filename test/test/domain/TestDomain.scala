@@ -14,7 +14,7 @@ import domain.HasPassedPreReqs_FINE_GRAINED
 import domain.Passed
 import util.LoggingSupport
 import org.apache.log4j.Logger
-import domain.HasPassed3
+import domain.HasPassed
 import org.junit.Test
 import junit.framework.Assert
 import scala.actors.TIMEOUT
@@ -63,7 +63,7 @@ class TestDomain {
 
   @Test def testStudentHasPassed1() {
 
-    bebe ! HasPassed3(ap, self)
+    bebe ! HasPassed(ap, self)
 
     receiveWithin(2000) {
 
@@ -137,7 +137,7 @@ class TestDomain {
   
   @Test def testStudentHasPassed2() {
 
-    bebe ! HasPassed3(math1, self)
+    bebe ! HasPassed(math1, self)
 
     receiveWithin(500) {
       case Passed(math11, result) =>
@@ -172,7 +172,7 @@ class TestDomain {
   }
 
   @Test def testStudentHasPassed3() {
-    bebe ! HasPassed3(ds, self)
+    bebe ! HasPassed(ds, self)
 
     receiveWithin(500) {
       case Passed(ds, result) =>
