@@ -80,7 +80,7 @@ class Student(
         debug("prerequisite: " + pre + " has been passed by student: " + this)
       else {
         debug("prerequisite: " + pre + " has NOT been passed by student: " + this)
-        //        return false
+        return false
       }
 
     }
