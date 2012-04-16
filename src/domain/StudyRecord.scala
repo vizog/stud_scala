@@ -3,14 +3,6 @@ package domain
 import scala.actors.Actor;
 import scala.actors.Actor._;
 
-//messages:
-
-trait StudyRecordMessage
-trait StudyRecordMessageReply
-
-case object SayGrade extends StudyRecordMessage
-case class AreYouAPassCourseRecord(course: Course, target: Actor) extends StudyRecordMessage
-
 class StudyRecord(
   var grade: Double,
   var offering: Offering) extends BaseDomainClass {
@@ -21,13 +13,13 @@ class StudyRecord(
         case SayGrade =>
           println(grade)
 
-        case AreYouAPassCourseRecord(course, target) =>
+        case AreYouAPassCourseRequest(course, target) =>
           debug("[StudyRec:" + this + "] received: AreYouAPassCourseRecord(" + course + ", " + target + ")");
           if (grade < 10) {
             debug("[StudyRec:" + this + "] sent: Passed(" + course + ", false) to " + target);
             target ! Passed(course, false);
           } else {
-            offering ! HasPassed2(course, target)
+            offering ! HasPassed(course, target)
             debug("[StudyRec:" + this + "] sent: HasPassed2(" + course + ", " + target + ") + to " + offering);
           }
         //        case AreYouAPassCourseRecord(course, target) =>

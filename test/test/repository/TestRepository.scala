@@ -9,13 +9,12 @@ import domain.SayName
 import domain.ChangeName
 import domain.Save
 import domain.Student
-import domain.HasPassed1
 import domain.HasPassedPreReqs
 import domain.HasPassedPreReqs_FINE_GRAINED
-import domain.HasPassed2
 import domain.Passed
 import util.LoggingSupport
 import org.apache.log4j.Logger
+import domain.HasPassed
 
 object TestRepository extends {
 
@@ -54,36 +53,6 @@ object TestRepository extends {
     println(new Date() + " received response: " + response)
 
   }
-
-  private def testStudent() {
-    var course: Course = CourseRepository.findById("ds");
-    val pres: List[Course] = CourseRepository.findPreRequisitesForCourse(course)
-    course.preRequisites = pres
-    course.start
-    var st = StudentRepository.findById("bebe")
-    st.studyRecords = StudentRepository.findStudyRecords(st)
-    st.start
-    st ! HasPassed1(course, self)
-    receive {
-      case "hello" =>
-        println("dsf")
-    }
-  }
-  private def testStudentHasPassed() {
-    var course: Course = CourseRepository.findById("ap");
-    val pres: List[Course] = CourseRepository.findPreRequisitesForCourse(course)
-    course.preRequisites = pres
-    course.start
-    var st = StudentRepository.findById("bebe")
-    st.studyRecords = StudentRepository.findStudyRecords(st)
-    st.start
-    st ! HasPassed1(course, self)
-
-    //    receive {
-    //      case "hello" =>
-    //        println("dsf")
-    //    }
-  }
   private def testStudentHasPassed2() {
     var course: Course = CourseRepository.findById("ap");
     val pres: List[Course] = CourseRepository.findPreRequisitesForCourse(course)
@@ -93,7 +62,7 @@ object TestRepository extends {
     st.studyRecords = StudentRepository.findStudyRecords(st)
     st.start
     Logger.getLogger(getClass()).debug("self: " + self)
-    st ! HasPassed2(course, st)
+    st ! HasPassed(course, st)
 //    receive {
 //      case Passed(course, _) =>
 //        Logger.getLogger("Received: " + Passed(course, true))

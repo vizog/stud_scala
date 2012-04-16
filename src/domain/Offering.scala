@@ -3,13 +3,6 @@ package domain
 import scala.actors.Actor
 import java.sql.Date
 
-//messages:
-trait OfferingMsg
-case class IsYourCourse(course: Course, target: Actor) extends OfferingMsg
-
-
-
-
 class Offering(
   var id: String,
   var course: Course,
@@ -20,10 +13,8 @@ class Offering(
   override def act() {
     loop {
       react {
-        case SayId =>
-          println(id)
-        case IsYourCourse(crs, target) =>
-          debug( this + " received " + IsYourCourse(crs, target))
+        case IsYourCourseRequest(crs, target) =>
+          debug( this + " received " + IsYourCourseRequest(crs, target))
           if (crs.equals(this.course)) {
             debug( this + " replied true")
             reply(true);
@@ -33,8 +24,8 @@ class Offering(
 
           }
           
-        case HasPassed2(crs, target) =>
-        debug( this + " received " + HasPassed2(crs, target))
+        case HasPassed(crs, target) =>
+        debug( this + " received " + HasPassed(crs, target))
         if (crs.equals(this.course)) {
         	debug( this + " replied true")
         	target ! Passed(crs,true);
