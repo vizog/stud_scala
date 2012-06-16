@@ -12,6 +12,13 @@ case class HasPassed(course: Course, target: Actor) extends StudentMessage
 case class HasTaken(course: Course, target: Actor)
 case class HasPassedPreReqs(course: Course, target: Actor) extends StudentMessage
 case class HasPassedPreReqs_FINE_GRAINED(course: Course, target: Actor) extends StudentMessage
+case class StudentStudyRecordsForTermRequest(term: Term, target: Actor) extends StudentMessage
+case class StudentStudyRecordsForTermResponse(records:List[StudyRecord]) extends StudentMessage
+case class CourseGradeRequest(term: Term, target: Actor, response:CourseGradeResponse) extends StudentMessage
+case class CourseGradeResponse(isForTerm:Boolean, grade: Double, courseName:String, units:Int) extends StudentMessage
+case class GPARequest(st:Student, term: Term, target: Actor, result:CourseGradeRequest) extends StudentMessage
+case class TranscriptRequest(st:Student, term: Term, target: Actor, result:CourseGradeRequest) extends StudentMessage
+case class GPAResponse(gpa:Double) extends StudentMessage
 
 trait StudentMessageReply
 case class Passed(course: Course, pass: Boolean) extends StudentMessageReply
@@ -37,6 +44,10 @@ case class AreYouAPassCourseRequest(course: Course, target: Actor) extends Study
 case class AreYouCurrentTermCourseRequest(course: Course, target: Actor) extends StudyRecordMessage
 case class AreYouAPassCourseResponse(course: Course, result: Boolean) extends StudyRecordMessage
 case class AreYouCurrentTermCourseResponse(course: Course, result: Boolean) extends StudyRecordMessage
+
+/////////////////// TERM
+case object TermOfferingsRequest
+case class TermOfferingsResponse(offerings: List[Offering])
 
 
 

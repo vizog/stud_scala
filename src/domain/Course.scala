@@ -16,18 +16,15 @@ class Course(
   override def act() {
     loop {
       react {
-        case SayName =>
-          println(new java.util.Date() + " course  " + this + " received SayName")
-          debug("waiting for 10 secs ... ")
-          Thread.sleep(10000)
-          reply(name)
-        case SayId =>
-          println(id)
-        case ChangeName(newName) =>
-          println("changing the old name : '" + name + "' to new name : '" + newName + "'")
-          name = newName
         case Save =>
           CourseRepository.save(this)
+
+        case CourseGradeRequest(term: Term, target: Actor, CourseGradeResponse(true, grade, null, 0)) =>
+          debug(this + " received " + CourseGradeRequest(term: Term, target: Actor, CourseGradeResponse(true, grade, null, 0)) )
+          //append course name and units to the result and send it to coordinator
+          target ! CourseGradeResponse(true, grade, name, units)
+          debug(this + " sent " + CourseGradeResponse(true, grade, name, units) + " to " + target) 
+
         case exit =>
           exit
       }
@@ -35,17 +32,17 @@ class Course(
 
   }
 
-  override def toString = "[course: id= " + id +", name " + name + ", units = " + units + "]"
+  override def toString = "[course: id= " + id + ", name " + name + ", units = " + units + "]"
   override def equals(other: Any): Boolean =
     other match {
       case that: Course =>
         return (that canEqual this) &&
           id == that.id
-          
+
       case _ => false
     }
 
   def canEqual(other: Any): Boolean =
     other.isInstanceOf[Course]
-  
+
 }

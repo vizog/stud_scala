@@ -17,6 +17,7 @@ object TermRepository {
 			if (rs.next())
 				currentTerm = new Term(rs.getString("name"), rs.getDate("start_date"), Nil);
 			JDBCUtil.closeConnection(con);
+			currentTerm.start()
 			return currentTerm;
   }
   

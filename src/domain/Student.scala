@@ -40,14 +40,17 @@ class Student(
           courseTakenCheckActor.start
           courseTakenCheckActor ! HasTaken(course, target)
           
-          
-
+        case GPARequest(_, term: Term, target: Actor,_) =>
+          debug(this + " received message: " + GPARequest(null, term: Term, target: Actor,null))
+          val gpaCoordinator:StudentComputeTermGPAActor = new StudentComputeTermGPAActor()
+          gpaCoordinator.start
+          gpaCoordinator ! GPARequest(this, term, target, null)
         case exit =>
           exit
       }
     }
   }
 
-  override def toString = "[Student: id = " + id + ", name = " + name + "]"
+  override def toString = "[Student:" + id + "]"
 
 }

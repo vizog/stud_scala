@@ -5,7 +5,6 @@ import scala.actors.Actor._;
 
 //messages:
 
-
 class StudyRecord(
   var grade: Double,
   var offering: Offering) extends BaseDomainClass {
@@ -22,21 +21,19 @@ class StudyRecord(
             debug("[StudyRec:" + this + "] sent:" + AreYouAPassCourseResponse(course, false) + " to: " + target);
             sender ! AreYouAPassCourseResponse(course, false);
           } else {
-            actor{
-            	println("inner self:" + self)
-            	offering ! IsYourCourseRequest(course, target)
-            	debug("[StudyRec:" + this + "] sent: " +IsYourCourseRequest(course, target)  + " to: " + offering);
-            	self.react {
-            	   case IsYourCourseResponse(course, result, target) => //this come from Offering. the response should be sent to StudentCoursePassActor
-            	   target ! AreYouAPassCourseResponse(course, result)
-            	   debug("[StudyRec:" + this + "] sent:" + AreYouAPassCourseResponse(course, result) + " to: " + target);
-            	}
-            	
-              
+            actor {
+              println("inner self:" + self)
+              offering ! IsYourCourseRequest(course, target)
+              debug("[StudyRec:" + this + "] sent: " + IsYourCourseRequest(course, target) + " to: " + offering);
+              self.react {
+                case IsYourCourseResponse(course, result, target) => //this come from Offering. the response should be sent to StudentCoursePassActor
+                  target ! AreYouAPassCourseResponse(course, result)
+                  debug("[StudyRec:" + this + "] sent:" + AreYouAPassCourseResponse(course, result) + " to: " + target);
+              }
+
             }
           }
 
-          
         case AreYouCurrentTermCourseRequest(course, target) =>
 
           debug("[StudyRec:" + this + "] received: " + AreYouCurrentTermCourseRequest(course, target));
@@ -44,19 +41,25 @@ class StudyRecord(
             debug("[StudyRec:" + this + "] sent:" + Taken(course, false) + " to " + target);
             sender ! AreYouCurrentTermCourseResponse(course, false);
           } else {
-            
+
             actor {
               offering ! IsYourCourseRequest(course, target)
-              println("inner self: " + self)
               self.react {
-                case IsYourCourseResponse(course, result, target) => 
-                	target ! AreYouCurrentTermCourseResponse(course, result)
-                	debug("[StudyRec:" + this + "] sent: " + AreYouCurrentTermCourseResponse(course, result))
+                case IsYourCourseResponse(course, result, target) =>
+                  target ! AreYouCurrentTermCourseResponse(course, result)
+                  debug("[StudyRec:" + this + "] sent: " + AreYouCurrentTermCourseResponse(course, result))
               }
             }
           }
 
-       
+        case CourseGradeRequest( term: Term, target, null) =>
+          debug("[StudyRec:" + this + "] received:" + CourseGradeRequest( term: Term, target, null));
+    	  //put the grade in result and send it along
+    	  //note that first arguement of GPAItemResult (isForTerm) is false although we haven't checked it yet. 
+    	  //this is because we can't set boolean to null.
+    	  offering ! CourseGradeRequest( term, target, CourseGradeResponse(false, grade, null, 0))
+    	  debug(this + " sent " + CourseGradeRequest( term, target, CourseGradeResponse(false, grade, null, 0))+ " to " + offering)
+            
 
         case exit =>
           exit

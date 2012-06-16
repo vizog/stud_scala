@@ -2,11 +2,9 @@ package domain
 
 import scala.actors.Actor
 import java.sql.Date
+import repository.OfferingRepository
 
 //messages:
-
-
-
 
 class Offering(
   var id: String,
@@ -21,15 +19,34 @@ class Offering(
         case SayId =>
           println(id)
         case IsYourCourseRequest(crs, target) =>
-          debug( this + "received " + IsYourCourseRequest(crs, target))
+          debug(this + "received " + IsYourCourseRequest(crs, target))
           if (crs.equals(this.course)) {
-            debug( this + "replied true")
+            debug(this + "replied true")
             sender ! IsYourCourseResponse(crs, true, target)
           } else {
             debug(this + "replied false")
             sender ! IsYourCourseResponse(crs, false, target)
           }
-          
+
+        case CourseGradeRequest( term_, target, result) =>
+          debug(this + " received " + CourseGradeRequest( term_, target, result) )
+
+          result match {
+
+            case CourseGradeResponse(false, grade, null, 0) =>
+              // this comes from study record because value for isForTerm is false (note that in scala, Boolean is not nullable)
+              // send to Term so it checks if the gpa request is for this offering's term.
+              term ! CourseGradeRequest(term_, target, CourseGradeResponse(false, grade, null, 0))
+              debug(this + " sent " + CourseGradeRequest(term_, target, CourseGradeResponse(false, grade, null, 0)) + " to " + term)
+                   
+            case CourseGradeResponse(true, grade, null, 0) =>
+              //this comes from Term, because value for isForTerm is true.
+              // forward it to course to fill in the rest of parameters 
+              course ! CourseGradeRequest(term_, target, CourseGradeResponse(true, grade, null, 0))
+              debug(this + " sent " + CourseGradeRequest(term_, target, CourseGradeResponse(true, grade, null, 0)) + "to " + course)
+            
+          }
+
         case exit =>
           exit
       }

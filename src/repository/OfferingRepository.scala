@@ -19,15 +19,33 @@ object OfferingRepository {
 
     var offering: Offering = null;
     if (rs.next()) {
-      var crs:Course = CourseRepository.findById(rs.getString("course_id"));
+      var crs: Course = CourseRepository.findById(rs.getString("course_id"));
       crs.preRequisites = CourseRepository.findPreRequisitesForCourse(crs);
       var term: Term = TermRepository.findByName(rs.getString("term_name"));
-      offering = new Offering(id, crs, rs.getInt("section") , rs.getDate("exam_date"), term );
+      offering = new Offering(id, crs, rs.getInt("section"), rs.getDate("exam_date"), term);
       offering.start
-      
+
     }
     con.close();
     return offering;
+  }
+  
+  def listTermOfferings(term: Term): List[Offering] = {
+
+    var con: Connection = JDBCUtil.getConnection
+    var st: Statement = con.createStatement
+    var rs: ResultSet = st.executeQuery("select * from offering where term_name='" + term.name + "'");
+
+    var offerings: List[Offering] = List();
+    while (rs.next()) {
+      
+      val course: Course = CourseRepository.findById(rs.getString("course_id"))
+      var of: Offering = new Offering(rs.getString("id"), course, rs.getInt("section"), rs.getDate("exam_date"), term);
+      of.start()
+      offerings = of :: offerings
+    }
+    con.close();
+    return offerings;
   }
 
 }
