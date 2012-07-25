@@ -11,25 +11,23 @@ class Offering(
   var course: Course,
   var section: Int,
   var examDate: Date,
-  var term: Term) extends BaseDomainClass {
+  var term: Term) extends BaseDomain {
 
   override def act() {
     loop {
       react {
-        case SayId =>
-          println(id)
         case IsYourCourseRequest(crs, target) =>
-          debug(this + "received " + IsYourCourseRequest(crs, target))
+          //debug(this + "received " + IsYourCourseRequest(crs, target))
           if (crs.equals(this.course)) {
-            debug(this + "replied true")
+            //debug(this + "replied true")
             sender ! IsYourCourseResponse(crs, true, target)
           } else {
-            debug(this + "replied false")
+            //debug(this + "replied false")
             sender ! IsYourCourseResponse(crs, false, target)
           }
 
         case CourseGradeRequest( term_, target, result) =>
-          debug(this + " received " + CourseGradeRequest( term_, target, result) )
+          //debug(this + " received " + CourseGradeRequest( term_, target, result) )
 
           result match {
 
@@ -37,18 +35,16 @@ class Offering(
               // this comes from study record because value for isForTerm is false (note that in scala, Boolean is not nullable)
               // send to Term so it checks if the gpa request is for this offering's term.
               term ! CourseGradeRequest(term_, target, CourseGradeResponse(false, grade, null, 0))
-              debug(this + " sent " + CourseGradeRequest(term_, target, CourseGradeResponse(false, grade, null, 0)) + " to " + term)
+              //debug(this + " sent " + CourseGradeRequest(term_, target, CourseGradeResponse(false, grade, null, 0)) + " to " + term)
                    
             case CourseGradeResponse(true, grade, null, 0) =>
               //this comes from Term, because value for isForTerm is true.
               // forward it to course to fill in the rest of parameters 
               course ! CourseGradeRequest(term_, target, CourseGradeResponse(true, grade, null, 0))
-              debug(this + " sent " + CourseGradeRequest(term_, target, CourseGradeResponse(true, grade, null, 0)) + "to " + course)
+              //debug(this + " sent " + CourseGradeRequest(term_, target, CourseGradeResponse(true, grade, null, 0)) + "to " + course)
             
           }
 
-        case exit =>
-          exit
       }
     }
   }

@@ -7,7 +7,7 @@ import repository.StudentRepository
 
 class StudentTakeCourseActor(
 
-  var student: Student) extends BaseDomainClass {
+  var student: Student) extends BaseDomain {
   def this() = this(null)
 
   private var offering: Offering = null
@@ -20,7 +20,7 @@ class StudentTakeCourseActor(
         case TakeCourse(offering_, target_) =>
           offering = offering_
           target = target_
-          debug(this + " received " + TakeCourse(offering, target_))
+          //debug(this + " received " + TakeCourse(offering, target_))
           //validate : 
           //check that he/she has not already passed the course:
           student ! HasPassed(offering.course, this)
@@ -37,22 +37,22 @@ class StudentTakeCourseActor(
           sendResponse(false, "student " + student + " has already passed the course: " + course)
 
         case Passed(course, false) =>
-          debug("validate -> already passsed? -> OK.  Stepping forward")
+          //debug("validate -> already passsed? -> OK.  Stepping forward")
           stepForward()
 
         case Taken(course, true) =>
           sendResponse(false, "student " + student + " has already taken the course: " + course)
           
         case Taken(course, false) =>
-          debug("validate -> already taken? -> OK.  Stepping forward")
+          //debug("validate -> already taken? -> OK.  Stepping forward")
           stepForward()
           
         case PassedPres(course, false) =>
-          debug("validate -> passed pres? -> FAIL")
+          //debug("validate -> passed pres? -> FAIL")
           sendResponse(false, "student " + student + " has not passed all prerequisites for the course: " + course)
 
         case PassedPres(course, true) =>
-          debug("validate -> passed pres? -> OK. Stepping forward")
+          //debug("validate -> passed pres? -> OK. Stepping forward")
           stepForward()
         case other:Any =>
           println("********************" + other)
@@ -66,7 +66,7 @@ class StudentTakeCourseActor(
 				  //take the course
 				  val sr:StudyRecord = new StudyRecord(-1,offering)
 	  StudentRepository.saveStudyRecord(student,sr)
-	  debug("student " + student + " successfully took course: " + offering.course )
+	  //debug("student " + student + " successfully took course: " + offering.course )
 	  sendResponse(true, "all checks have passed")
 	  
 	  

@@ -5,7 +5,7 @@ import scala.actors.Actor._
 import scala.actors.OutputChannel
 import repository.StudentRepository
 
-class StudentComputeTermGPAActor() extends BaseDomainClass {
+class StudentComputeTermGPAActor() extends BaseDomain {
 
   private var student: Student = null
   private var term: Term = null
@@ -24,7 +24,7 @@ class StudentComputeTermGPAActor() extends BaseDomainClass {
           case GPARequest(st: Student, term: Term, target_, null) => sendOutRequestsToStudyRecs(st, term, target_)
 
           case CourseGradeResponse(isForTerm: Boolean, grade: Double, courseName: String, units: Int) =>
-            debug("received: " + CourseGradeResponse(isForTerm, grade, courseName, units))
+            //debug("received: " + CourseGradeResponse(isForTerm, grade, courseName, units))
             if (isForTerm) {
               if (grade != -1) {
                 //if grade == -1, it means that the grade for this course is not assigned yet. 
@@ -48,7 +48,7 @@ class StudentComputeTermGPAActor() extends BaseDomainClass {
         gpa = 0.0
       else
         gpa = gpa / totalUnits
-      debug("transcript for student" + student + "in term: " + term + " : \n" + transcript)
+//      debug("transcript for student" + student + "in term: " + term + " : \n" + transcript)
       sendResponse()
 
     }
@@ -56,6 +56,7 @@ class StudentComputeTermGPAActor() extends BaseDomainClass {
 
   def sendResponse() {
     target ! GPAResponse(gpa)
+    info("sent " + GPAResponse(gpa) + "to target: " + target + "in term: " + term + " : \n" + transcript)
     exit
   }
 

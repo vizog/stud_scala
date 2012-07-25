@@ -10,23 +10,17 @@ class Course(
   var id: String,
   var name: String,
   var units: Int,
-  var preRequisites: List[Course]) extends BaseDomainClass {
+  var preRequisites: List[Course]) extends BaseDomain {
   def this() = this(null, null, 0, Nil)
 
   override def act() {
     loop {
       react {
-        case Save =>
-          CourseRepository.save(this)
-
         case CourseGradeRequest(term: Term, target: Actor, CourseGradeResponse(true, grade, null, 0)) =>
           debug(this + " received " + CourseGradeRequest(term: Term, target: Actor, CourseGradeResponse(true, grade, null, 0)) )
           //append course name and units to the result and send it to coordinator
           target ! CourseGradeResponse(true, grade, name, units)
           debug(this + " sent " + CourseGradeResponse(true, grade, name, units) + " to " + target) 
-
-        case exit =>
-          exit
       }
     }
 

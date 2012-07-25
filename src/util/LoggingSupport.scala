@@ -6,4 +6,7 @@ trait LoggingSupport {
 	def debug(message:String) {
 	  Logger.getLogger(getClass()).debug(message)
 	}
+	def info(message:String) {
+		Logger.getLogger(getClass()).info(message)
+	}
 }

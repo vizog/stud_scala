@@ -235,7 +235,7 @@ class TestDomain {
   @Test def testGPA2() {
 
     bebe ! GPARequest(null, term88_89_2, self, null)
-    receiveWithin(10000) {
+    react {
       case GPAResponse(gpa: Double) =>
         Logger.getLogger(getClass()).debug("received final response: " + GPAResponse(gpa))
         //bebe has already taken math1, should reply false

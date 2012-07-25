@@ -4,7 +4,7 @@ import scala.actors.Actor
 import scala.actors.Actor._;
 
 class StudentPassPreReqsActor(
-  var student: Student) extends BaseDomainClass {
+  var student: Student) extends BaseDomain {
   def this() = this(null)
 
   private var target: Actor = null
@@ -19,9 +19,9 @@ class StudentPassPreReqsActor(
           course = course_
           target = target_
 
-          debug(this + " received message: " + HasPassedPreReqs(course, target_))
+          //debug(this + " received message: " + HasPassedPreReqs(course, target_))
           if(course.preRequisites.size == 0) {
-            debug(course + " has no prerequisites so we send " + PassedPres(course, true))
+            //debug(course + " has no prerequisites so we send " + PassedPres(course, true))
             target ! PassedPres(course, true)
           } else {
         	  hasPassedPreReqs(course);
@@ -29,19 +29,17 @@ class StudentPassPreReqsActor(
 
         case Passed(pre, false) =>
           target ! PassedPres(course, false)
-          debug(this + " received " + Passed(pre, false) + " so we send " + PassedPres(course, false) + " to target")
+          //debug(this + " received " + Passed(pre, false) + " so we send " + PassedPres(course, false) + " to target")
 
         case Passed(pre, true) =>
           numOfResponses += 1;
-          debug(this + " received " + Passed(pre, true))
+          //debug(this + " received " + Passed(pre, true))
 
           if (numOfResponses == course.preRequisites.size) {
-            debug(this + " received " + numOfResponses + " 'pass' responses from pre requisite courses so we send PassedPres(true) ")
+            //debug(this + " received " + numOfResponses + " 'pass' responses from pre requisite courses so we send PassedPres(true) ")
             target ! PassedPres(course, false)
           }
 
-        case a: Any =>
-          debug(this + " received " + a)
       }
     }
   }
