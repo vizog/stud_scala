@@ -10,7 +10,7 @@ import domain.Offering
 import java.sql.PreparedStatement
 import util.LoggingSupport
 
-object StudentRepository extends BaseRepository with LoggingSupport {
+object StudentRepository {
 
   def findById(id: String): Student = {
 

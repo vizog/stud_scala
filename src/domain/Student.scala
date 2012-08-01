@@ -45,8 +45,6 @@ class Student(
           val gpaCoordinator:StudentComputeTermGPAActor = new StudentComputeTermGPAActor()
           gpaCoordinator.start
           gpaCoordinator ! GPARequest(this, term, target, null)
-        case exit =>
-          exit
       }
     }
   }

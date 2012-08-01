@@ -14,7 +14,7 @@ class StudyRecord(
     loop {
       react {
         case AreYouAPassCourseRequest(course, target) =>
-          println("outer self:" + self)
+//          println("outer self:" + self)
 
           //debug("[StudyRec:" + this + "] received: AreYouAPassCourseRecord(" + course + ", " + target + ")");
           if (grade < 10) {
@@ -26,7 +26,7 @@ class StudyRecord(
               offering ! IsYourCourseRequest(course, target)
               //debug("[StudyRec:" + this + "] sent: " + IsYourCourseRequest(course, target) + " to: " + offering);
               self.react {
-                case IsYourCourseResponse(course, result, target) => //this come from Offering. the response should be sent to StudentCoursePassActor
+                case IsYourCourseResponse(course, result, target) => //this comes from Offering. the response should be sent to StudentCoursePassActor
                   target ! AreYouAPassCourseResponse(course, result)
                   //debug("[StudyRec:" + this + "] sent:" + AreYouAPassCourseResponse(course, result) + " to: " + target);
               }

@@ -24,14 +24,13 @@ class StudentTakeCourseActor(
           //validate : 
           //check that he/she has not already passed the course:
           student ! HasPassed(offering.course, this)
-          
+
           //check that student has passed all prerequisites:
           val coursePassPres = new StudentPassPreReqsActor(student)
           coursePassPres.start
           coursePassPres ! HasPassedPreReqs(offering.course, this)
           //check that student has not already taken this course
           student ! HasTaken(offering.course, this)
-
 
         case Passed(course, true) =>
           sendResponse(false, "student " + student + " has already passed the course: " + course)
@@ -42,11 +41,11 @@ class StudentTakeCourseActor(
 
         case Taken(course, true) =>
           sendResponse(false, "student " + student + " has already taken the course: " + course)
-          
+
         case Taken(course, false) =>
           //debug("validate -> already taken? -> OK.  Stepping forward")
           stepForward()
-          
+
         case PassedPres(course, false) =>
           //debug("validate -> passed pres? -> FAIL")
           sendResponse(false, "student " + student + " has not passed all prerequisites for the course: " + course)
@@ -54,23 +53,20 @@ class StudentTakeCourseActor(
         case PassedPres(course, true) =>
           //debug("validate -> passed pres? -> OK. Stepping forward")
           stepForward()
-        case other:Any =>
-          println("********************" + other)
       }
     }
   }
   def stepForward() {
-	  numOfResponses += 1
-			  if (numOfResponses == 3) {
-				  //2 validation steps (already passed and passed prerequisites)
-				  //take the course
-				  val sr:StudyRecord = new StudyRecord(-1,offering)
-	  StudentRepository.saveStudyRecord(student,sr)
-	  //debug("student " + student + " successfully took course: " + offering.course )
-	  sendResponse(true, "all checks have passed")
-	  
-	  
-			  }
+    numOfResponses += 1
+    if (numOfResponses == 3) {
+      //2 validation steps (already passed and passed prerequisites)
+      //take the course
+      val sr: StudyRecord = new StudyRecord(-1, offering)
+      StudentRepository.saveStudyRecord(student, sr)
+      //debug("student " + student + " successfully took course: " + offering.course )
+      sendResponse(true, "all checks have passed")
+
+    }
   }
 
   def sendResponse(result: Boolean, comment: String) {
