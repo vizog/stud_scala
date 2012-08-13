@@ -35,8 +35,8 @@ import domain.GPAResponse
 
 class TestDomain {
 
-  var ap, math1, ds: Course = null
-  var dsOffering, dmOffering, math11: Offering = null
+  var ap, math1, ds, stat: Course = null
+  var dsOffering, dmOffering, math11, stat1: Offering = null
   var pres: List[Course] = null
   var bebe: Student = null
   var term88_89_1, term88_89_2: Term = null
@@ -49,6 +49,9 @@ class TestDomain {
     dsOffering = OfferingRepository.findById("ds1")
     dsOffering.start
 
+    stat1 = OfferingRepository.findById("stat1")
+    stat1.start
+    
     dmOffering = OfferingRepository.findById("dm1")
     dmOffering.start
     math11 = OfferingRepository.findById("math11")
@@ -57,6 +60,10 @@ class TestDomain {
     math1 = CourseRepository.findById("math1")
     math1.preRequisites = CourseRepository.findPreRequisitesForCourse(math1)
     math1.start
+    
+    stat = CourseRepository.findById("stat")
+    stat.preRequisites = CourseRepository.findPreRequisitesForCourse(stat)
+    stat.start
 
     ds = CourseRepository.findById("ds")
     ds.preRequisites = CourseRepository.findPreRequisitesForCourse(ds)
@@ -143,7 +150,25 @@ class TestDomain {
         Assert.fail("received other:" + a)
     }
   }
-
+  
+//  @Test def testStudentTakeCourse4() {
+//	  
+//	  bebe ! TakeCourse(stat1, self)
+//	  receiveWithin(500000) {
+//		  
+//	  case TakeCourseResponse(result, comment) =>
+//	  Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
+//	  //bebe has already taken math1, should reply false
+//	  Assert.assertEquals(true, result)
+//	  
+//	  case TIMEOUT =>
+//	  Assert.fail("time out")
+//	  
+//	  case a: Any =>
+//	  Assert.fail("received other:" + a)
+//	  }
+//  }
+//
   @Test def testStudentHasPassed2() {
 
     bebe ! HasPassed(math1, self)

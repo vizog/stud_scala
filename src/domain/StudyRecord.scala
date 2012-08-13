@@ -59,6 +59,18 @@ class StudyRecord(
     	  //this is because we can't set boolean to null.
     	  offering ! CourseGradeRequest( term, target, CourseGradeResponse(false, grade, null, 0))
     	  //debug(this + " sent " + CourseGradeRequest( term, target, CourseGradeResponse(false, grade, null, 0))+ " to " + offering)
+    	  
+    	//#ADDED
+        case NumOfCurrentTermTakenUnitsRequest(target) =>
+    	  //Ask Dr: is this valid?
+          var units = offering.course.units
+          if (grade != -1)
+            units = 0;//because it is not for current term.
+          target ! NumOfCurrentTermTakenUnitsResponse(units)
+            
+          
+          //###
+          
             
       }
     }

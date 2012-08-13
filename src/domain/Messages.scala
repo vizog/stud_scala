@@ -19,6 +19,10 @@ case class CourseGradeResponse(isForTerm:Boolean, grade: Double, courseName:Stri
 case class GPARequest(st:Student, term: Term, target: Actor, result:CourseGradeRequest) extends StudentMessage
 case class TranscriptRequest(st:Student, term: Term, target: Actor, result:CourseGradeRequest) extends StudentMessage
 case class GPAResponse(gpa:Double) extends StudentMessage
+//#ADDED
+case class NumOfCurrentTermTakenUnitsRequest(target: Actor) extends StudentMessage
+case class NumOfCurrentTermTakenUnitsResponse(numOfTakenUnits:Int) extends StudentMessage
+//###
 
 trait StudentMessageReply
 case class Passed(course: Course, pass: Boolean) extends StudentMessageReply

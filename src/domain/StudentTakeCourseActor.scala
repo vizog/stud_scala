@@ -23,6 +23,7 @@ class StudentTakeCourseActor(
           //debug(this + " received " + TakeCourse(offering, target_))
           //validate : 
           //check that he/she has not already passed the course:
+          //Ask Dr: is offering.course violating actor model?
           student ! HasPassed(offering.course, this)
 
           //check that student has passed all prerequisites:
@@ -31,7 +32,12 @@ class StudentTakeCourseActor(
           coursePassPres ! HasPassedPreReqs(offering.course, this)
           //check that student has not already taken this course
           student ! HasTaken(offering.course, this)
-
+          //#ADDED
+          //check that student has not taken more than 20 units
+          val currentTermUnitsChecker = new StudentNumOfUnitsActor(student);
+          currentTermUnitsChecker.start
+          currentTermUnitsChecker ! NumOfCurrentTermTakenUnitsRequest(this)
+          //###
         case Passed(course, true) =>
           sendResponse(false, "student " + student + " has already passed the course: " + course)
 
@@ -53,13 +59,21 @@ class StudentTakeCourseActor(
         case PassedPres(course, true) =>
           //debug("validate -> passed pres? -> OK. Stepping forward")
           stepForward()
+
+        //#ADDED
+        case NumOfCurrentTermTakenUnitsResponse(takenUnits) =>
+          if (takenUnits + offering.course.units > 20)
+            sendResponse(false, "student " + student + " can't take more than 20 units. already taken units = " + takenUnits)
+          else
+            stepForward()
+        //###
       }
     }
   }
   def stepForward() {
     numOfResponses += 1
-    if (numOfResponses == 3) {
-      //2 validation steps (already passed and passed prerequisites)
+    if (numOfResponses == 4) {
+      //4 validation steps 
       //take the course
       val sr: StudyRecord = new StudyRecord(-1, offering)
       StudentRepository.saveStudyRecord(student, sr)
