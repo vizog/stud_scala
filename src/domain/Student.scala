@@ -27,7 +27,7 @@ class Student(
     
         case HasPassed(course, target) =>
           //APPROACH 3
-          //debug(this + " received message: " + HasPassed(course, target))
+          /* */debug(this + " received message: " + HasPassed(course, target))
           val coursePassActor  = new StudentCoursePassActor(this)
           coursePassActor.start
           coursePassActor ! HasPassed(course, target)
@@ -35,13 +35,13 @@ class Student(
           
         case HasTaken(course, target) =>
           //APPROACH 3
-          //debug(this + " received message: " + HasTaken(course, target))
+          /* */debug(this + " received message: " + HasTaken(course, target))
           val courseTakenCheckActor  = new StudentCourseTakenCheckActor(this)
           courseTakenCheckActor.start
           courseTakenCheckActor ! HasTaken(course, target)
           
         case GPARequest(_, term: Term, target: Actor,_) =>
-          //debug(this + " received message: " + GPARequest(null, term: Term, target: Actor,null))
+          /* */debug(this + " received message: " + GPARequest(null, term: Term, target: Actor,null))
           val gpaCoordinator:StudentComputeTermGPAActor = new StudentComputeTermGPAActor()
           gpaCoordinator.start
           gpaCoordinator ! GPARequest(this, term, target, null)

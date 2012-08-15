@@ -16,22 +16,22 @@ class StudentCoursePassActor(
 
         case HasPassed(course, target_) =>
 
-          //debug(this + " received message: " + HasPassed(course, target_ ))
+          /* */debug(this + " received message: " + HasPassed(course, target_ ))
           target = target_
           hasPassed(course);
 
         case AreYouAPassCourseResponse(course, true) =>
 
           numOfResponses += 1;
-          //debug(this + " received " + AreYouAPassCourseResponse(course, true))
+          /* */debug(this + " received " + AreYouAPassCourseResponse(course, true))
           sendResponse(course, true)
 
         case AreYouAPassCourseResponse(course, false) =>
 
           numOfResponses += 1;
-          //debug(this + " received " + AreYouAPassCourseResponse(course, false))
+          /* */debug(this + " received " + AreYouAPassCourseResponse(course, false))
           if (numOfResponses == student.studyRecords.size) {
-            //debug(this + " received " + numOfResponses + " responses from studyRecords and none was a pass record so we send Passed(false) ")
+            /* */debug(this + " received " + numOfResponses + " responses from studyRecords and none was a pass record so we send Passed(false) ")
             sendResponse(course, false)
           }
       }

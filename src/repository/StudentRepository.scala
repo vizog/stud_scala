@@ -71,7 +71,6 @@ object StudentRepository {
 		  st.setString(2,sr.offering.id);
 		  st.setInt(3,-1);
 		  st.execute()
-		  //debug("saved studyRecord: " + sr)
 		  JDBCUtil.closeConnection(con);
 		  } catch {
 		  case ex: SQLException =>

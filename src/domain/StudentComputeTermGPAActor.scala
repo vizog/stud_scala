@@ -24,7 +24,7 @@ class StudentComputeTermGPAActor() extends BaseDomain {
           case GPARequest(st: Student, term: Term, target_, null) => sendOutRequestsToStudyRecs(st, term, target_)
 
           case CourseGradeResponse(isForTerm: Boolean, grade: Double, courseName: String, units: Int) =>
-            //debug("received: " + CourseGradeResponse(isForTerm, grade, courseName, units))
+            /* */debug("received: " + CourseGradeResponse(isForTerm, grade, courseName, units))
             if (isForTerm) {
               if (grade != -1) {
                 //if grade == -1, it means that the grade for this course is not assigned yet. 

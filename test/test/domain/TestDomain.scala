@@ -35,8 +35,8 @@ import domain.GPAResponse
 
 class TestDomain {
 
-  var ap, math1, ds, stat: Course = null
-  var dsOffering, dmOffering, math11, stat1: Offering = null
+  var ap, math1, ds, stat, dm: Course = null
+  var dsOffering, dmOffering, math11, stat1, ap1, ap2, math22: Offering = null
   var pres: List[Course] = null
   var bebe: Student = null
   var term88_89_1, term88_89_2: Term = null
@@ -48,14 +48,24 @@ class TestDomain {
 
     dsOffering = OfferingRepository.findById("ds1")
     dsOffering.start
+    
+    ap1 = OfferingRepository.findById("ap1")
+    ap1.start
 
+    ap2 = OfferingRepository.findById("ap2")
+    ap2.start
+    
     stat1 = OfferingRepository.findById("stat1")
     stat1.start
     
     dmOffering = OfferingRepository.findById("dm1")
     dmOffering.start
+    
     math11 = OfferingRepository.findById("math11")
     math11.start
+    
+    math22 = OfferingRepository.findById("math22")
+    math22.start
 
     math1 = CourseRepository.findById("math1")
     math1.preRequisites = CourseRepository.findPreRequisitesForCourse(math1)
@@ -69,6 +79,10 @@ class TestDomain {
     ds.preRequisites = CourseRepository.findPreRequisitesForCourse(ds)
     ds.start
 
+    dm = CourseRepository.findById("dm")
+    dm.preRequisites = CourseRepository.findPreRequisitesForCourse(dm)
+    dm.start
+    
     bebe = StudentRepository.findById("bebe")
     bebe.studyRecords = StudentRepository.findStudyRecords(bebe)
     bebe.start
@@ -124,10 +138,10 @@ class TestDomain {
       case TakeCourseResponse(result, comment) =>
         Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
         //should not be able to take dm (hasn't passed math1)
-        Assert.assertEquals(result, false)
+        Assert.assertEquals(result, true)
 
       case TIMEOUT =>
-        Assert.fail("time out")
+        Assert.fail("timeout")
 
       case a: Any =>
         Assert.fail("received other:" + a)
@@ -135,40 +149,38 @@ class TestDomain {
   }
   @Test def testStudentTakeCourse3() {
 
-    bebe ! TakeCourse(math11, self)
+    bebe ! TakeCourse(math22, self)
     receiveWithin(5000) {
 
       case TakeCourseResponse(result, comment) =>
         Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
-        //bebe has already taken math1, should reply false
-        Assert.assertEquals(result, false)
+        Assert.assertEquals(result, true)
 
       case TIMEOUT =>
-        Assert.fail("time out")
+        Assert.fail("timeout")
 
       case a: Any =>
         Assert.fail("received other:" + a)
     }
   }
   
-//  @Test def testStudentTakeCourse4() {
-//	  
-//	  bebe ! TakeCourse(stat1, self)
-//	  receiveWithin(500000) {
-//		  
-//	  case TakeCourseResponse(result, comment) =>
-//	  Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
-//	  //bebe has already taken math1, should reply false
-//	  Assert.assertEquals(true, result)
-//	  
-//	  case TIMEOUT =>
-//	  Assert.fail("time out")
-//	  
-//	  case a: Any =>
-//	  Assert.fail("received other:" + a)
-//	  }
-//  }
-//
+  @Test def testStudentTakeCourse4() {
+	  
+	  bebe ! TakeCourse(ap1, self)
+	  receiveWithin(500000) {
+		  
+	  case TakeCourseResponse(result, comment) =>
+	  Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
+	  Assert.assertEquals(true, result)
+	  
+	  case TIMEOUT =>
+	  Assert.fail("timeout")
+	  
+	  case a: Any =>
+	  Assert.fail("received other:" + a)
+	  }
+  }
+
   @Test def testStudentHasPassed2() {
 
     bebe ! HasPassed(math1, self)
@@ -190,12 +202,12 @@ class TestDomain {
 
     val coursePassPres = new StudentPassPreReqsActor(bebe)
     coursePassPres.start
-    coursePassPres ! HasPassedPreReqs(ds, self);
+    coursePassPres ! HasPassedPreReqs(dm, self);
 
     receiveWithin(500) {
-      case PassedPres(ds, result) =>
-        Logger.getLogger(getClass()).debug("received final response: " + PassedPres(ds, result))
-        Assert.assertEquals(result, false)
+      case PassedPres(dm, result) =>
+        Logger.getLogger(getClass()).debug("received final response: " + PassedPres(dm, result))
+        Assert.assertEquals(result, true)
 
       case TIMEOUT =>
         Assert.fail("time out")

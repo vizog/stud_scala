@@ -11,10 +11,20 @@ drop table if exists offering;
 drop table if exists student;
 drop table if exists course;
 drop table if exists term;
+drop table if exists term_regulation;
+
+create table term_regulation (
+	id varchar(20) not null,
+	max_allowed_units integer not null default 20,
+	retake_allowed bit not null default 0,
+	take_without_pres_allowed bit not null default 0,
+	primary key (id)
+);
 
 create table term (
 	name varchar(20) not null,
 	start_date date not null,
+	regulation_id varchar(20) not null,
 
 	primary key (name)
 );
@@ -76,8 +86,11 @@ delete from offering;
 delete from course;
 delete from term;
 
-insert into term values('88-89-1', '2009-09-23');
-insert into term values('88-89-2', '2010-02-06');
+insert into term_regulation values('default', 20,0,0);
+insert into term_regulation values('special', 24,1,0);
+
+insert into term values('88-89-1', '2009-09-23','default');
+insert into term values('88-89-2', '2010-02-06','special');
 
 insert into course values('ds', 'DS', 3);
 insert into course values('ap', 'AP', 3);
