@@ -10,10 +10,10 @@ case object SayName
 case object SayId
 
 class Student(
-  var id: String,
-  var name: String,
-  var studyRecords: List[StudyRecord]) extends BaseDomain {
-  def this() = this(null, null, Nil)
+  var id: String,  var name: String,
+  var studyRecords: List[StudyRecord],
+  val program: Program) extends BaseDomain {
+  def this() = this(null, null, Nil, null)
 
   override def act() {
     loop {

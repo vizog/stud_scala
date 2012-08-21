@@ -1,4 +1,3 @@
-set global max_connections = 1000;
 
 create database if not exists edu;
 use edu;
@@ -12,6 +11,9 @@ drop table if exists student;
 drop table if exists course;
 drop table if exists term;
 drop table if exists term_regulation;
+drop table if exists requirement;
+drop table if exists program;
+
 
 create table term_regulation (
 	id varchar(20) not null,
@@ -53,7 +55,7 @@ create table offering (
 create table student (
 	id varchar(20) not null,
 	name varchar(50) not null,
-
+	program_id varchar(20) not null default 'prog_1',
 	primary key (id)
 );
 
@@ -68,29 +70,37 @@ create table study_record (
 	constraint student_fk foreign key(student_id) references student(id),
 	constraint offering_fk foreign key(offering_id) references offering(id)
 );
-	
-create table prerequisites (
-	course_id varchar(20) not null,
-	pre_id varchar(20) not null,
-	
-	primary key (course_id, pre_id),
-	
-	constraint p_course_fk foreign key(course_id) references course(id),
-	constraint pre_fk foreign key(pre_id) references course(id)
+CREATE TABLE `program` (
+  id varchar(20) not null,
+  PRIMARY KEY (`id`)
 );
 
-delete from study_record;
-delete from student;
-delete from prerequisites;
-delete from offering;
-delete from course;
-delete from term;
+
+CREATE TABLE `requirement` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  course_id varchar(20) NOT NULL,
+  program_id varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+create table prerequisites (
+	req_id int(11) not null,
+	pre_id int(11) not null,
+	primary key (req_id, pre_id),
+	constraint req_fk foreign key(req_id) references requirement(id),
+	constraint pre_fk foreign key(pre_id) references requirement(id)
+);
+
+
+
 
 insert into term_regulation values('default', 20,0,0);
 insert into term_regulation values('special', 24,1,0);
 
 insert into term values('88-89-1', '2009-09-23','default');
 insert into term values('88-89-2', '2010-02-06','special');
+
+insert into program values('prog_1');
 
 insert into course values('ds', 'DS', 3);
 insert into course values('ap', 'AP', 3);
@@ -116,15 +126,24 @@ insert into offering values('ds2', 'ds', 1, '2010-06-10', '88-89-2');
 insert into offering values('lang2a', 'lang', 1, '2010-06-11', '88-89-2');
 insert into offering values('lang2b', 'lang', 2, '2010-06-08', '88-89-2');
 
-insert into student values('bebe', 'Bebe');
-insert into student values('xi', 'Xi');
+insert into student(id,name) values('bebe', 'Bebe');
+insert into student(id,name) values('xi', 'Xi');
 
 insert into study_record(student_id,offering_id,grade) values('bebe', 'ap1', 18.0);
 insert into study_record(student_id,offering_id,grade) values('bebe', 'stat1', 12.0);
 insert into study_record(student_id,offering_id,grade) values('bebe', 'math11', 8.4);
 
-insert into prerequisites values ('ds', 'ap');
-insert into prerequisites values ('ds', 'dm');
-insert into prerequisites values ('dm', 'math1');
-insert into prerequisites values ('math2', 'math1');
+
+insert into requirement(course_id,program_id) values('ds', 'prog_1');
+insert into requirement(course_id,program_id) values('ap', 'prog_1');
+insert into requirement(course_id,program_id) values('dm', 'prog_1');
+insert into requirement(course_id,program_id) values('math1','prog_1');
+insert into requirement(course_id,program_id) values('stat', 'prog_1');
+insert into requirement(course_id,program_id) values('math2','prog_1');
+insert into requirement(course_id,program_id) values('lang', 'prog_1');
+
+insert into prerequisites values (1, 2);
+insert into prerequisites values (1, 3);
+insert into prerequisites values (3, 4);
+insert into prerequisites values (6, 4);
 

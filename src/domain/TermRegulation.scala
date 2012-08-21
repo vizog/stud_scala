@@ -1,14 +1,12 @@
 package domain
 import actors.Actor
-import java.sql.Date;
+import java.sql.Date
 import repository.OfferingRepository
 
 class TermRegulation(var maxAllowedUnits: Int, var reTakeCourseAllowed: Boolean, var takeWithoutPassPresAllowed: Boolean) extends BaseDomain {
-
   override def act() {
     loop {
       react {
-        //	      ConditionalContinuation(condition:String, assertionResponse:Any, assertionTarget: Actor, continuationTarget: Actor, continuationMessage: Any)
         case ConditionalContinuation(condition, assertionResponse, assertionTarget, continuationTarget, continuationMessage) =>
           /* */ debug(this + " received: " + ConditionalContinuation(condition, assertionResponse, assertionTarget, continuationTarget, continuationMessage))
           condition match {

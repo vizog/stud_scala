@@ -4,48 +4,38 @@ import scala.actors.Actor
 import scala.actors.Actor._;
 
 class StudentPassPreReqsActor(
-  var student: Student) extends BaseDomain {
-  def this() = this(null)
+  var student: Student, var requirement: Requirement, var target: Actor) extends BaseDomain {
 
-  private var target: Actor = null
   private var numOfResponses: Int = 0
-  private var course: Course = null
 
   override def act() {
-    loop {
-      react {
+    if (requirement.prerequisites.size == 0) {
+      /* */ debug(requirement + " has no prerequisites so we send " + PassedPres(requirement, true))
+      target ! PassedPres(requirement, true)
+    } else {
+      hasPassedPreReqs(requirement);
 
-        case HasPassedPreReqs(course_, target_) =>
-          course = course_
-          target = target_
-
-          /* */debug(this + " received message: " + HasPassedPreReqs(course, target_))
-          if(course.preRequisites.size == 0) {
-            /* */debug(course + " has no prerequisites so we send " + PassedPres(course, true))
-            target ! PassedPres(course, true)
-          } else {
-        	  hasPassedPreReqs(course);
-          }
-
-        case Passed(pre, false) =>
-          target ! PassedPres(course, false)
-          /* */debug(this + " received " + Passed(pre, false) + " so we send " + PassedPres(course, false) + " to target")
-
-        case Passed(pre, true) =>
-          numOfResponses += 1;
-          /* */debug(this + " received " + Passed(pre, true))
-          if (numOfResponses == course.preRequisites.size) {
-            /* */debug(this + " received " + numOfResponses + " 'pass' responses from pre requisite courses so we send PassedPres(true) ")
-            target ! PassedPres(course, true)
-          }
-
+      loop {
+        react {
+          case Passed(pre, false) =>
+            target ! PassedPres(requirement, false)
+            /* */ debug(this + " received " + Passed(pre, false) + " so we send " + PassedPres(requirement, false) + " to target")
+          case Passed(pre, true) =>
+            numOfResponses += 1;
+            /* */ debug(this + " received " + Passed(pre, true))
+            if (numOfResponses == requirement.prerequisites.size) {
+              /* */ debug(this + " received " + numOfResponses + " 'pass' responses from pre requisite courses so we send PassedPres(true) ")
+              target ! PassedPres(requirement, true)
+            }
+        }
       }
     }
+
   }
 
-  def hasPassedPreReqs(course: Course) = {
-    for (pre <- course.preRequisites)
-      student ! HasPassed(pre, this)
+  def hasPassedPreReqs(req: Requirement) = {
+    for (pre <- req.prerequisites)
+      student ! HasPassed(pre.course, this)
   }
 
   override def toString = "[StudentPassPreReqsActor of " + student + "]"

@@ -1,4 +1,5 @@
 package test.domain
+
 import repository.CourseRepository
 import repository.StudentRepository
 import repository.TermRepository
@@ -11,7 +12,6 @@ import domain.ChangeName
 import domain.Save
 import domain.Student
 import domain.HasPassedPreReqs
-import domain.HasPassedPreReqs_FINE_GRAINED
 import domain.Passed
 import util.LoggingSupport
 import org.apache.log4j.Logger
@@ -32,6 +32,8 @@ import domain.TermOfferingsRequest
 import domain.TermOfferingsResponse
 import domain.GPARequest
 import domain.GPAResponse
+import repository.ProgramRepository
+import repository.TermRepository
 
 class TestDomain {
 
@@ -48,29 +50,29 @@ class TestDomain {
 
     dsOffering = OfferingRepository.findById("ds1")
     dsOffering.start
-    
+
     ap1 = OfferingRepository.findById("ap1")
     ap1.start
 
     ap2 = OfferingRepository.findById("ap2")
     ap2.start
-    
+
     stat1 = OfferingRepository.findById("stat1")
     stat1.start
-    
+
     dmOffering = OfferingRepository.findById("dm1")
     dmOffering.start
-    
+
     math11 = OfferingRepository.findById("math11")
     math11.start
-    
+
     math22 = OfferingRepository.findById("math22")
     math22.start
 
     math1 = CourseRepository.findById("math1")
     math1.preRequisites = CourseRepository.findPreRequisitesForCourse(math1)
     math1.start
-    
+
     stat = CourseRepository.findById("stat")
     stat.preRequisites = CourseRepository.findPreRequisitesForCourse(stat)
     stat.start
@@ -82,7 +84,7 @@ class TestDomain {
     dm = CourseRepository.findById("dm")
     dm.preRequisites = CourseRepository.findPreRequisitesForCourse(dm)
     dm.start
-    
+
     bebe = StudentRepository.findById("bebe")
     bebe.studyRecords = StudentRepository.findStudyRecords(bebe)
     bebe.start
@@ -154,7 +156,7 @@ class TestDomain {
 
       case TakeCourseResponse(result, comment) =>
         Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
-        Assert.assertEquals(result, true)
+        Assert.assertEquals(false, result)
 
       case TIMEOUT =>
         Assert.fail("timeout")
@@ -163,22 +165,34 @@ class TestDomain {
         Assert.fail("received other:" + a)
     }
   }
-  
+
   @Test def testStudentTakeCourse4() {
-	  
-	  bebe ! TakeCourse(ap1, self)
-	  receiveWithin(500000) {
-		  
-	  case TakeCourseResponse(result, comment) =>
-	  Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
-	  Assert.assertEquals(true, result)
-	  
-	  case TIMEOUT =>
-	  Assert.fail("timeout")
-	  
-	  case a: Any =>
-	  Assert.fail("received other:" + a)
-	  }
+    bebe ! TakeCourse(ap2, self)
+    receiveWithin(500) {
+      case TakeCourseResponse(result, comment) =>
+        Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
+        Assert.assertEquals(false, result)
+      case TIMEOUT =>
+        Assert.fail("timeout")
+      case a: Any =>
+        Assert.fail("received other:" + a)
+    }
+  }
+  @Test def testStudentTakeCourse5() {
+
+    bebe ! TakeCourse(math11, self)
+    receiveWithin(500) {
+
+      case TakeCourseResponse(result, comment) =>
+        Logger.getLogger(getClass()).debug("received final response: " + TakeCourseResponse(result, comment))
+        Assert.assertEquals(true, result)
+
+      case TIMEOUT =>
+        Assert.fail("timeout")
+
+      case a: Any =>
+        Assert.fail("received other:" + a)
+    }
   }
 
   @Test def testStudentHasPassed2() {
@@ -200,14 +214,14 @@ class TestDomain {
 
   @Test def testStudentHasPassedPres() {
 
-    val coursePassPres = new StudentPassPreReqsActor(bebe)
+    val dmReq = ProgramRepository.findCourseRequirement(bebe.program.id, dm)
+    val coursePassPres = new StudentPassPreReqsActor(bebe, dmReq, self)
     coursePassPres.start
-    coursePassPres ! HasPassedPreReqs(dm, self);
 
-    receiveWithin(500) {
+    receiveWithin(500000) {
       case PassedPres(dm, result) =>
         Logger.getLogger(getClass()).debug("received final response: " + PassedPres(dm, result))
-        Assert.assertEquals(result, true)
+        Assert.assertEquals(false, result)
 
       case TIMEOUT =>
         Assert.fail("time out")

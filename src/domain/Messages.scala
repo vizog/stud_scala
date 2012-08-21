@@ -10,8 +10,7 @@ case class TakeCourseResponse(result: Boolean, comment: String) extends StudentM
 case class ChangeName(name: String) extends StudentMessage
 case class HasPassed(course: Course, target: Actor) extends StudentMessage
 case class HasTaken(course: Course, target: Actor)
-case class HasPassedPreReqs(course: Course, target: Actor) extends StudentMessage
-case class HasPassedPreReqs_FINE_GRAINED(course: Course, target: Actor) extends StudentMessage
+case class HasPassedPreReqs(student: Student, course: Course, target: Actor) extends StudentMessage
 case class StudentStudyRecordsForTermRequest(term: Term, target: Actor) extends StudentMessage
 case class StudentStudyRecordsForTermResponse(records:List[StudyRecord]) extends StudentMessage
 case class CourseGradeRequest(term: Term, target: Actor, response:CourseGradeResponse) extends StudentMessage
@@ -29,7 +28,7 @@ trait StudentMessageReply
 case class Passed(course: Course, pass: Boolean) extends StudentMessageReply
 //Taken : means that the student has taken the course in current term and has not failed or passed it yet
 case class Taken(course: Course, pass: Boolean) extends StudentMessageReply
-case class PassedPres(course: Course, pass: Boolean) extends StudentMessageReply
+case class PassedPres(requirement: Requirement, pass: Boolean) extends StudentMessageReply
 
 
 

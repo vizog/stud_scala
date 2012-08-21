@@ -9,6 +9,7 @@ import domain.StudyRecord
 import domain.Offering
 import java.sql.PreparedStatement
 import util.LoggingSupport
+import domain.Program
 
 object StudentRepository {
 
@@ -20,7 +21,7 @@ object StudentRepository {
 
     var stud: Student = null;
     if (rs.next()) {
-      stud = new Student(rs.getString("id"), rs.getString("name"), Nil);
+      stud = new Student(rs.getString("id"), rs.getString("name"), Nil, ProgramRepository.findById(rs.getString("program_id")));
       stud.start
     }
     JDBCUtil.closeConnection(con);

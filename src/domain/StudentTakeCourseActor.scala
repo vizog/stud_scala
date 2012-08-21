@@ -30,10 +30,11 @@ class StudentTakeCourseActor(
 //          student ! HasPassed(offering.course, this)
 
           //check that student has passed all prerequisites:
-          val coursePassPres = new StudentPassPreReqsActor(student)
-          coursePassPres.start
-//          coursePassPres ! HasPassedPreReqs(offering.course, this)
-          offering.term.termRegulation ! ConditionalContinuation(TakeWithoutPreReqsAllowedCondition, PassedPres(offering.course, true), this, coursePassPres, HasPassedPreReqs(offering.course, this))
+//          val coursePassPres = new StudentPassPreReqsActor(student)
+//          coursePassPres.start
+////          coursePassPres ! HasPassedPreReqs(offering.course, this)
+//          offering.term.termRegulation ! ConditionalContinuation(TakeWithoutPreReqsAllowedCondition, PassedPres(offering.course, true), this, coursePassPres, HasPassedPreReqs(offering.course, this))
+          student.program !  HasPassedPreReqs(student, offering.course, this);
           
           //check that student has not already taken this course
           student ! HasTaken(offering.course, this)
