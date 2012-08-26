@@ -20,10 +20,10 @@ object OfferingRepository {
     var offering: Offering = null;
     if (rs.next()) {
       var crs: Course = CourseRepository.findById(rs.getString("course_id"));
-      crs.preRequisites = CourseRepository.findPreRequisitesForCourse(crs);
+//      crs.preRequisites = CourseRepository.findPreRequisitesForCourse(crs);
       var term: Term = TermRepository.findByName(rs.getString("term_name"));
       offering = new Offering(id, crs, rs.getInt("section"), rs.getDate("exam_date"), term);
-      offering.start
+//      offering.start
 
     }
     con.close();

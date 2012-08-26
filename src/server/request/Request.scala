@@ -1,12 +1,15 @@
 package server.request
 
 import scala.actors.Actor
-import util.LoggingSupport
+
+import org.apache.log4j.Logger
 
 //messages:
 
 abstract class Request(
-  var id: String) extends Actor with LoggingSupport {
+  var id: String) extends Actor {
+  
+  private val perfLogger: Logger = Logger.getLogger("PerformanceLogger");
 
 //  override def act() {
 //    val start = System.currentTimeMillis();
@@ -25,5 +28,13 @@ abstract class Request(
 
   override def toString(): String = {
     return "Request: [" + id + "]"
+  }
+  
+  def info(msg:String) = {
+    perfLogger.info(msg)
+  }
+  
+  def debug(msg:String) = {
+	  perfLogger.debug(msg)
   }
 }

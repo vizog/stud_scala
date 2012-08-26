@@ -17,7 +17,7 @@ object CourseRepository {
     var crs: Course = null;
     if (rs.next()) {
       crs = new Course(rs.getString("id"), rs.getString("name"), rs.getInt("units"), Nil);
-      crs.start
+//      crs.start
     }
 
     //add prerequisites

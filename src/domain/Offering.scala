@@ -28,6 +28,7 @@ class Offering(
 
         case CourseGradeRequest( term_, target, result) =>
           /* */debug(this + " received " + CourseGradeRequest( term_, target, result) )
+          term.start
 
           result match {
 
@@ -40,6 +41,7 @@ class Offering(
             case CourseGradeResponse(true, grade, null, 0) =>
               //this comes from Term, because value for isForTerm is true.
               // forward it to course to fill in the rest of parameters 
+              course.start
               course ! CourseGradeRequest(term_, target, CourseGradeResponse(true, grade, null, 0))
               /* */debug(this + " sent " + CourseGradeRequest(term_, target, CourseGradeResponse(true, grade, null, 0)) + "to " + course)
             

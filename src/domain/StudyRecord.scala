@@ -50,13 +50,13 @@ class StudyRecord(
           }
 
         case CourseGradeRequest( term: Term, target, null) =>
-          /* */debug("[StudyRec:" + this + "] received:" + CourseGradeRequest( term: Term, target, null));
+          debug("[StudyRec:" + this + "] received:" + CourseGradeRequest( term: Term, target, null));
     	  //put the grade in result and send it along
     	  //note that first arguement of GPAItemResult (isForTerm) is false although we haven't checked it yet. 
     	  //this is because we can't set boolean to null.
+          offering.start
     	  offering ! CourseGradeRequest( term, target, CourseGradeResponse(false, grade, null, 0))
     	  /* */debug(this + " sent " + CourseGradeRequest( term, target, CourseGradeResponse(false, grade, null, 0))+ " to " + offering)
-    	  
     	//#ADDED
         case NumOfTermTakenUnitsAssertionRequest(target) =>
     	  //Ask Dr: is this valid?

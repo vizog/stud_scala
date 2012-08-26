@@ -5,14 +5,10 @@ import scala.actors.Actor._
 import scala.actors.OutputChannel
 import repository.StudentRepository
 
-class StudentComputeTermGPAActor() extends BaseDomain {
+class StudentComputeTermGPAActor(val student: Student, val term: Term, val numOfExpectedResponses: Int, val target: Actor) extends BaseDomain {
 
-  private var student: Student = null
-  private var term: Term = null
   private var offering: Offering = null
-  private var target: Actor = null
   private var numOfResponses: Int = 0
-  private var numOfExpectedResponses: Int = 0
   private var gpa: Double = 0
   private var totalUnits: Int = 0
   private var transcript: List[String] = List.empty
@@ -21,7 +17,7 @@ class StudentComputeTermGPAActor() extends BaseDomain {
     loop {
       (
         react({
-          case GPARequest(st: Student, term: Term, target_, null) => sendOutRequestsToStudyRecs(st, term, target_)
+//          case GPARequest(st: Student, term: Term, target_, null) => sendOutRequestsToStudyRecs(st, term, target_)
 
           case CourseGradeResponse(isForTerm: Boolean, grade: Double, courseName: String, units: Int) =>
             /* */debug("received: " + CourseGradeResponse(isForTerm, grade, courseName, units))
@@ -48,7 +44,7 @@ class StudentComputeTermGPAActor() extends BaseDomain {
         gpa = 0.0
       else
         gpa = gpa / totalUnits
-//      debug("transcript for student" + student + "in term: " + term + " : \n" + transcript)
+      debug("transcript for student" + student + "in term: " + term + " : \n" + transcript)
       sendResponse()
 
     }
@@ -63,14 +59,14 @@ class StudentComputeTermGPAActor() extends BaseDomain {
   override def toString = "[StudentComputeTermGPAActor of " + student + "]"
 
   private def sendOutRequestsToStudyRecs(st: Student, term: Term, targetActor: Actor): Unit = {
-    this.target = targetActor
-    this.student = st
-    this.term = term
-    this.numOfExpectedResponses = student.studyRecords.size
+//    this.target = targetActor
+//    this.student = st
+//    this.term = term
+//    this.numOfExpectedResponses = student.studyRecords.size
     //send request to all study records
-    for (sr <- student.studyRecords)
+//    for (sr <- student.studyRecords)
       //      sr ! GPARequest(st, term, self, null)
-      sr ! CourseGradeRequest(term, self, null)
+      student ! CourseGradeRequest(term, self, null)
   }
 
   private def getTranscriptString(courseName: String, grade: Double, units: Int): String = {

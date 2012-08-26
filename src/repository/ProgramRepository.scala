@@ -22,7 +22,7 @@ object ProgramRepository {
       prog = new Program(rs.getString("id"), Nil)
     }
     JDBCUtil.closeConnection(con);
-    prog.start()
+//    prog.start()
     return prog;
   }
 

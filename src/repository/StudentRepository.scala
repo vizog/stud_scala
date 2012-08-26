@@ -22,7 +22,7 @@ object StudentRepository {
     var stud: Student = null;
     if (rs.next()) {
       stud = new Student(rs.getString("id"), rs.getString("name"), Nil, ProgramRepository.findById(rs.getString("program_id")));
-      stud.start
+//      stud.start
     }
     JDBCUtil.closeConnection(con);
     return stud

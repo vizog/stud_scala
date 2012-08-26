@@ -1,7 +1,8 @@
 package domain
 
-import scala.actors.Actor;
+import scala.actors.Actor
 import scala.actors.Actor._;
+import repository.StudentRepository
 
 //messages:
 
@@ -11,7 +12,7 @@ case object SayId
 
 class Student(
   var id: String,  var name: String,
-  var studyRecords: List[StudyRecord],
+  var studyRecords: List[StudyRecord] = Nil,
   val program: Program) extends BaseDomain {
   def this() = this(null, null, Nil, null)
 
@@ -41,11 +42,17 @@ class Student(
           courseTakenCheckActor ! HasTaken(course, target)
           
         case GPARequest(_, term: Term, target: Actor,_) =>
+          if(studyRecords == Nil)
+            studyRecords = StudentRepository.findStudyRecords(this)
+    
           /* */debug(this + " received message: " + GPARequest(null, term: Term, target: Actor,null))
-          val gpaCoordinator:StudentComputeTermGPAActor = new StudentComputeTermGPAActor()
+          val gpaCoordinator:StudentComputeTermGPAActor = new StudentComputeTermGPAActor(this, term,studyRecords.size, target )
           gpaCoordinator.start
-          gpaCoordinator ! GPARequest(this, term, target, null)
-      }
+//          gpaCoordinator ! GPARequest(this, term, target, null)
+          for (sr <- studyRecords)
+        	  sr ! CourseGradeRequest(term, gpaCoordinator, null)
+          
+       }
     }
   }
 
