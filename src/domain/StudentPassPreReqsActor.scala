@@ -12,6 +12,7 @@ class StudentPassPreReqsActor(
     if (requirement.prerequisites.size == 0) {
       /* */ debug(requirement + " has no prerequisites so we send " + PassedPres(requirement, true))
       target ! PassedPres(requirement, true)
+      exit;
     } else {
       hasPassedPreReqs(requirement);
 
@@ -20,12 +21,14 @@ class StudentPassPreReqsActor(
           case Passed(pre, false) =>
             target ! PassedPres(requirement, false)
             /* */ debug(this + " received " + Passed(pre, false) + " so we send " + PassedPres(requirement, false) + " to target")
+            exit;
           case Passed(pre, true) =>
             numOfResponses += 1;
             /* */ debug(this + " received " + Passed(pre, true))
             if (numOfResponses == requirement.prerequisites.size) {
               /* */ debug(this + " received " + numOfResponses + " 'pass' responses from pre requisite courses so we send PassedPres(true) ")
               target ! PassedPres(requirement, true)
+              exit;
             }
         }
       }

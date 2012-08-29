@@ -24,10 +24,11 @@ class GPARequest(var reqId: String, var studId: String) extends Request(reqId) {
     bebe ! GPARequest(null, term88_89_1, self, null)
     react {
       case GPAResponse(gpa: Double) =>
-        Logger.getLogger(getClass()).debug("received final response: " + GPAResponse(gpa))
+//        Logger.getLogger(getClass()).debug("received final response: " + GPAResponse(gpa))
         val end = System.currentTimeMillis();
-        debug(id + " END      -> " + end);
-        info(";" + id + ";" + (end - start));
+//        debug(id + " END      -> " + end);
+//        info(";" + id + ";" + (end - start));
+        println(end - start + "," + end)
     }
   }
 

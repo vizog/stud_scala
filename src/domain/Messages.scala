@@ -19,7 +19,7 @@ case class GPARequest(st:Student, term: Term, target: Actor, result:CourseGradeR
 case class TranscriptRequest(st:Student, term: Term, target: Actor, result:CourseGradeRequest) extends StudentMessage
 case class GPAResponse(gpa:Double) extends StudentMessage
 //#ADDED
-case class NumOfTermTakenUnitsAssertionRequest(target: Actor) extends StudentMessage
+case class NumOfTermTakenUnitsAssertionRequest(target: Actor, course:Course) extends StudentMessage
 case class NumOfTermTakenUnits(numOfTakenUnits:Int) extends StudentMessage
 case class NumOfTermTakenUnitsAssertionResult(assertionPassed:Boolean, takenUnits:Int) extends StudentMessage
 //###
@@ -55,7 +55,7 @@ case class TermOfferingsResponse(offerings: List[Offering])
 
 case class ConditionMessage
 case class ConditionalContinuation(condition:ConditionMessage, assertionResponse:Any, assertionTarget: Actor, continuationTarget: Actor, continuationMessage: Any)
-
+case class LockAllOfferingsOfTerm(start: Long)
 
 class Messages {
 

@@ -11,8 +11,8 @@ class Offering(
   var course: Course,
   var section: Int,
   var examDate: Date,
-  var term: Term) extends BaseDomain {
-
+  var term: Term, var locked: Boolean) extends BaseDomain {
+def this(id: String, course: Course, section: Int, examDate: Date, term:Term) = this(id,course,section,examDate,term,false)
   override def act() {
     loop {
       react {
@@ -46,7 +46,11 @@ class Offering(
               /* */debug(this + " sent " + CourseGradeRequest(term_, target, CourseGradeResponse(true, grade, null, 0)) + "to " + course)
             
           }
-
+          
+        case LockOffering =>
+          locked = true
+          OfferingRepository.saveOffering(this);
+           reply("done")
       }
     }
   }

@@ -26,9 +26,9 @@ public class JDBCUtil {
 			cpds.setPassword("edu");
 
 			// the settings below are optional -- c3p0 can work with defaults
-			cpds.setMinPoolSize(50);
-			cpds.setAcquireIncrement(5);
-			cpds.setMaxPoolSize(200);
+			cpds.setMinPoolSize(20);
+			cpds.setAcquireIncrement(10);
+			cpds.setMaxPoolSize(145);
 
 			
 		} catch (ClassNotFoundException ex) {
@@ -39,13 +39,13 @@ public class JDBCUtil {
 		}
 	}
 
-	public synchronized static Connection getConnection() throws SQLException {
+	public  static Connection getConnection() throws SQLException {
 		return cpds.getConnection();
 				
 //		return DriverManager.getConnection(CONN_STR);
 	}
 
-	public synchronized static void closeConnection(Connection con)
+	public static void closeConnection(Connection con)
 			throws SQLException {
 		con.close();
 	}

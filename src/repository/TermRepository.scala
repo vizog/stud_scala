@@ -26,7 +26,7 @@ object TermRepository {
       if (rs.next()) {
         var termRegulation: TermRegulation = new TermRegulation(rs.getInt("max_allowed_units"), rs.getBoolean("retake_allowed"), rs.getBoolean("take_without_pres_allowed"));
         currentTerm.termRegulation = termRegulation;
-//        termRegulation.start()
+        termRegulation.start()
       }
 
     }

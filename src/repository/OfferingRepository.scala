@@ -23,7 +23,7 @@ object OfferingRepository {
 //      crs.preRequisites = CourseRepository.findPreRequisitesForCourse(crs);
       var term: Term = TermRepository.findByName(rs.getString("term_name"));
       offering = new Offering(id, crs, rs.getInt("section"), rs.getDate("exam_date"), term);
-//      offering.start
+      offering.start
 
     }
     con.close();
@@ -38,7 +38,6 @@ object OfferingRepository {
 
     var offerings: List[Offering] = List();
     while (rs.next()) {
-      
       val course: Course = CourseRepository.findById(rs.getString("course_id"))
       var of: Offering = new Offering(rs.getString("id"), course, rs.getInt("section"), rs.getDate("exam_date"), term);
       of.start()
@@ -46,6 +45,22 @@ object OfferingRepository {
     }
     con.close();
     return offerings;
+  }
+  
+  def saveOffering(offering:Offering) = {
+    
+       var con: Connection = JDBCUtil.getConnection
+    var st: Statement = con.createStatement
+    if( st.executeQuery("select * from offering where id='" + offering.id + "'").next()) {
+    	st.executeUpdate("update offering set course_id='" + offering.course.id + 
+						"' ,term_name='" + offering.term.name + "' ,locked= " + (if(offering.locked) {1} else{0}) + " where id='" + offering.id + "'");
+    }
+    else
+    	st.executeUpdate("insert into offering (id, course_id, term_name) values('" + 
+    			offering.id + "', '" + offering.course.id + "', '" + offering.term.name + "')");
+       con.close();
+    
+
   }
 
 }

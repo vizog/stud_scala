@@ -5,6 +5,9 @@ import scala.actors.Actor._
 import scala.actors.OutputChannel
 import repository.StudentRepository
 
+case object RetakeCourseAllowedCondition extends ConditionMessage
+case object TakeWithoutPreReqsAllowedCondition extends ConditionMessage
+
 class StudentTakeCourseActor(
 
   var student: Student) extends BaseDomain {
@@ -13,6 +16,7 @@ class StudentTakeCourseActor(
   private var offering: Offering = null
   private var target: Actor = null
   private var numOfResponses: Int = 0
+  private var start_time:Long = 0
   
   override def act() {
     loop {
@@ -21,29 +25,22 @@ class StudentTakeCourseActor(
           offering = offering_
           target = target_
           debug(this + " received " + TakeCourse(offering, target_))
-          //validate : 
-          //check that he/she has not already passed the course:
-          //Ask Dr: is offering.course violating actor model?
-          
-          offering.term.termRegulation ! ConditionalContinuation(RetakeCourseAllowedCondition, Passed(offering.course, false), this, student, HasPassed(offering.course, this))
-          
-//          student ! HasPassed(offering.course, this)
 
-          //check that student has passed all prerequisites:
-//          val coursePassPres = new StudentPassPreReqsActor(student)
-//          coursePassPres.start
-////          coursePassPres ! HasPassedPreReqs(offering.course, this)
-//          offering.term.termRegulation ! ConditionalContinuation(TakeWithoutPreReqsAllowedCondition, PassedPres(offering.course, true), this, coursePassPres, HasPassedPreReqs(offering.course, this))
-          student.program !  HasPassedPreReqs(student, offering.course, this);
+//          start_time = System.currentTimeMillis()
+          //validate : 
+          //check that student has not taken more than 20 units
+          student !  NumOfTermTakenUnitsAssertionRequest(this, offering.course)
+
+          //check that student has not already passed the course:
+//          offering.term.termRegulation ! ConditionalContinuation(RetakeCourseAllowedCondition, Passed(offering.course, false), this, student, HasPassed(offering.course, this))
+          
+          //check that student has passed prerequisites
+//          student.program !  HasPassedPreReqs(student, offering.course, this);
           
           //check that student has not already taken this course
-          student ! HasTaken(offering.course, this)
-          //#ADDED
-          //check that student has not taken more than 20 units
-          val currentTermUnitsChecker = new StudentNumOfUnitsValidatorActor(student, offering.course);
-          currentTermUnitsChecker.start
-          currentTermUnitsChecker ! NumOfTermTakenUnitsAssertionRequest(this)
-          //###
+//          student ! HasTaken(offering.course, this)
+          
+           //###
         case Passed(course, true) =>
           sendResponse(false, "student " + student + " has already passed the course: " + course)
 
@@ -89,11 +86,10 @@ class StudentTakeCourseActor(
 
   def sendResponse(result: Boolean, comment: String) {
     target ! TakeCourseResponse(result, comment)
+//    println("sent "  + TakeCourseResponse(result, comment) + " to " + target)
     exit
   }
 
   override def toString = "[StudentTakeCourseActor of " + student + "]"
 
 }
-case object RetakeCourseAllowedCondition extends ConditionMessage
-case object TakeWithoutPreReqsAllowedCondition extends ConditionMessage

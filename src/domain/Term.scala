@@ -31,7 +31,20 @@ class Term(
             /* */debug(this + " sent " + CourseGradeResponse(false, 0, null, 0) + " to " + target )
             
           }
-	      
+          
+        case LockAllOfferingsOfTerm(startTime) =>
+          if(offerings == Nil)
+            offerings = OfferingRepository.listTermOfferings(this);
+          //this is only done so that we can measure response time:
+          val replies = for(offering <- offerings) yield {
+            offering.start
+            offering !! LockOffering 
+          }
+          for(i <- 1 to offerings.size)
+            replies(i-1)
+//            println("finish: " + System.currentTimeMillis())
+            println(System.currentTimeMillis() - startTime)
+            
 	    }
 	    
 	  }
@@ -39,3 +52,4 @@ class Term(
   }
    override def toString = "[Term:" + name + "]"
 }
+case object LockOffering
